@@ -25,7 +25,7 @@ public class EpicTask extends Task {
     }
 
     public void updateStatus(TaskManager taskManager) {
-        List<SubTask> subtasks = taskManager.getSubtasks(this.getId());
+        List<SubTask> subtasks = taskManager.getSubtasksByEpicId(this.getId());
         if (subtasks.isEmpty()) {
             this.setStatus(Status.NEW);
             return;

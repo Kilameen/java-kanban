@@ -55,13 +55,13 @@ public class Main {
         System.out.println("\nEpics:");
         for (EpicTask e : taskManager.getEpics()) {
             System.out.println(e.toString());
-            for (SubTask subTask : taskManager.getSubtasks(e.getId())) {
+            for (SubTask subTask : taskManager.getSubtasksByEpicId(e.getId())) {
                 System.out.println("--> " + subTask.toString());
             }
         }
 
         System.out.println("\nSubtasks:");
-        for (SubTask subTask : taskManager.getSubtasks()) {
+        for (SubTask subTask : taskManager.getSubtasksByEpicId()) {
             System.out.println(subTask.toString());
         }
     }
