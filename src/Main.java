@@ -12,8 +12,8 @@ public class Main {
         taskManager.addTask(task2);
         taskManager.addTask(task3);
 
-        EpicTask epic1 = new EpicTask("Epic_1", "Epic_desc_1");
-        EpicTask epic2 = new EpicTask("Epic_2", "Epic_desc_2");
+        Epic epic1 = new Epic("Epic_1", "Epic_desc_1");
+        Epic epic2 = new Epic("Epic_2", "Epic_desc_2");
 
         taskManager.addEpic(epic1);
         taskManager.addEpic(epic2);
@@ -53,7 +53,7 @@ public class Main {
         }
 
         System.out.println("\nEpics:");
-        for (EpicTask e : taskManager.getEpics()) {
+        for (Epic e : taskManager.getEpics()) {
             System.out.println(e.toString());
             for (SubTask subTask : taskManager.getSubtasksByEpicId(e.getId())) {
                 System.out.println("--> " + subTask.toString());

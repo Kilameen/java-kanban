@@ -1,10 +1,10 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class EpicTask extends Task {
+public class Epic extends Task {
     private final List<Integer> subtaskIds;
 
-    public EpicTask(String name, String description) {
+    public Epic(String name, String description) {
         super(name, description, Status.NEW);
         subtaskIds = new ArrayList<>();
     }
