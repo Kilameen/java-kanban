@@ -1,4 +1,4 @@
-package TaskTracker.Tasks;
+package TaskTracker.tasks;
 
 public class SubTask extends Task {
     private final int epicID;

@@ -1,4 +1,4 @@
-package TaskTracker.Tasks;
+package TaskTracker.tasks;
 
 public enum Status {
     NEW,

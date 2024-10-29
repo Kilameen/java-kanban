@@ -1,10 +1,10 @@
 package TaskTracker;
 
-import TaskTracker.TaskManager.TaskManager;
-import TaskTracker.Tasks.Epic;
-import TaskTracker.Tasks.Status;
-import TaskTracker.Tasks.SubTask;
-import TaskTracker.Tasks.Task;
+import TaskTracker.manager.TaskManager;
+import TaskTracker.tasks.Epic;
+import TaskTracker.tasks.Status;
+import TaskTracker.tasks.SubTask;
+import TaskTracker.tasks.Task;
 
 public class Main {
 
