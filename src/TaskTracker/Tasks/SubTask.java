@@ -1,9 +1,11 @@
+package TaskTracker.Tasks;
+
 public class SubTask extends Task {
     private final int epicID;
 
-    public SubTask(String name, String description, Status status, int idEpic) {
+    public SubTask(String name, String description, Status status, int epicID) {
         super(name, description, status);
-        this.epicID = idEpic;
+        this.epicID = epicID;
     }
 
     public int getEpicID() {
@@ -17,7 +19,7 @@ public class SubTask extends Task {
                 ", description='" + getDescription() + '\'' +
                 ", id=" + getId() +
                 ", status=" + getStatus() +
-                ", epicID" + epicID +
+                ", epicID=" + epicID +
                 '}';
     }
 }

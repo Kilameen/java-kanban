@@ -1,3 +1,11 @@
+package TaskTracker;
+
+import TaskTracker.TaskManager.TaskManager;
+import TaskTracker.Tasks.Epic;
+import TaskTracker.Tasks.Status;
+import TaskTracker.Tasks.SubTask;
+import TaskTracker.Tasks.Task;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -14,24 +22,31 @@ public class Main {
 
         Epic epic1 = new Epic("Epic_1", "Epic_desc_1");
         Epic epic2 = new Epic("Epic_2", "Epic_desc_2");
-
+        Epic epic3 = new Epic("Epic_3", "Epic_desc_3");
         taskManager.addEpic(epic1);
         taskManager.addEpic(epic2);
+        taskManager.addEpic(epic3);
 
         SubTask subtask1 = new SubTask("Subtask_1_1", "Subtask_desc_1_1", Status.NEW, epic1.getId());
-        SubTask subtask2 = new SubTask("Subtask_1_2", "Subtask_desc_1_2", Status.NEW, epic1.getId());
+        SubTask subtask2 = new SubTask("Subtask_1_2", "Subtask_desc_1_2", Status.DONE, epic1.getId());
         SubTask subtask3 = new SubTask("Subtask_2_1", "Subtask_desc_2_1", Status.DONE, epic2.getId());
         SubTask subtask4 = new SubTask("Subtask_2_2", "Subtask_desc_2_2", Status.DONE, epic2.getId());
+        SubTask subtask5 = new SubTask("Subtask_3_1", "Subtask_desc_3_1", Status.NEW, epic3.getId());
+        SubTask subtask6 = new SubTask("Subtask_3_2", "Subtask_desc_3_2", Status.NEW, epic3.getId());
+
 
         taskManager.addSubtask(subtask1);
         taskManager.addSubtask(subtask2);
         taskManager.addSubtask(subtask3);
         taskManager.addSubtask(subtask4);
+        taskManager.addSubtask(subtask5);
+        taskManager.addSubtask(subtask6);
         printAllTasks(taskManager);
 
         final Task task = taskManager.getTask(task1.getId());
         task.setStatus(Status.DONE);
-        taskManager.updateTask(task1.getId(), task1);
+        taskManager.updateTask(task1);
+
         printAllTasks(taskManager);
 
         System.out.println("DELETE: " + task1.getName());
@@ -53,15 +68,18 @@ public class Main {
         }
 
         System.out.println("\nEpics:");
-        for (Epic e : taskManager.getEpics()) {
-            System.out.println(e.toString());
-            for (SubTask subTask : taskManager.getSubtasksByEpicId(e.getId())) {
+        for (Epic epic : taskManager.getEpics()) {
+
+            System.out.println("\n" + epic.toString());
+
+            for (SubTask subTask : taskManager.getSubtasksByEpicId(epic.getId())) {
+
                 System.out.println("--> " + subTask.toString());
             }
         }
 
         System.out.println("\nSubtasks:");
-        for (SubTask subTask : taskManager.getSubtasksByEpicId()) {
+        for (SubTask subTask : taskManager.getSubtasks()) {
             System.out.println(subTask.toString());
         }
     }
