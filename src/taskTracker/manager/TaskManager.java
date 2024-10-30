@@ -1,9 +1,9 @@
-package TaskTracker.manager;
+package taskTracker.manager;
 
-import TaskTracker.tasks.Epic;
-import TaskTracker.tasks.Status;
-import TaskTracker.tasks.SubTask;
-import TaskTracker.tasks.Task;
+import taskTracker.tasks.Epic;
+import taskTracker.tasks.Status;
+import taskTracker.tasks.SubTask;
+import taskTracker.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,15 +37,15 @@ public class TaskManager {
         return new ArrayList<>(subtasks.values());
     }
 
-    public Task getTask(int id) {
+    public Task getTaskById(int id) {
         return tasks.get(id);
     }
 
-    public Task getEpic(int id) {
+    public Task getEpicById(int id) {
         return epics.get(id);
     }
 
-    public Task getSubtask(int id) {
+    public Task getSubtaskById(int id) {
         return subtasks.get(id);
     }
 
@@ -84,7 +84,7 @@ public class TaskManager {
             return;
         }
         epic.getSubtasksByEpic().add(subtask.getId());
-        updateStatus(epic.getId());
+        updateStatusEpicId(epic.getId());
     }
 
 //allUpdate
@@ -109,10 +109,10 @@ public class TaskManager {
             subtasks.put(subTaskId, subtask);
 
             int epicID =subtask.getEpicID();
-                updateStatus(epicID);
+                updateStatusEpicId(epicID);
             }
         }
-private void updateStatus(int id) {
+private void updateStatusEpicId(int id) {
     int resultStatus = 0;
     List<Integer> listSubtaskByEpic = epics.get(id).getSubtasksByEpic();
     for (Integer integer : listSubtaskByEpic) {
@@ -147,7 +147,7 @@ private void updateStatus(int id) {
     public void deleteAllSubtasks() {
         for (Epic epic : epics.values()) {
             epic.getSubtasksByEpic().clear();
-            updateStatus(epic.getId());
+            updateStatusEpicId(epic.getId());
 
         }
         subtasks.clear();
@@ -171,7 +171,7 @@ private void updateStatus(int id) {
             Epic epic = epics.get(removedSubtask.getEpicID());
             if (epic != null) {
                 epic.getSubtasksByEpic().remove((Integer) id);
-                updateStatus(epic.getId());
+                updateStatusEpicId(epic.getId());
             }
         }
     }

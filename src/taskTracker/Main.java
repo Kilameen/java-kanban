@@ -1,10 +1,10 @@
-package TaskTracker;
+package taskTracker;
 
-import TaskTracker.manager.TaskManager;
-import TaskTracker.tasks.Epic;
-import TaskTracker.tasks.Status;
-import TaskTracker.tasks.SubTask;
-import TaskTracker.tasks.Task;
+import taskTracker.manager.TaskManager;
+import taskTracker.tasks.Epic;
+import taskTracker.tasks.Status;
+import taskTracker.tasks.SubTask;
+import taskTracker.tasks.Task;
 
 public class Main {
 
@@ -43,7 +43,7 @@ public class Main {
         taskManager.addSubtask(subtask6);
         printAllTasks(taskManager);
 
-        final Task task = taskManager.getTask(task1.getId());
+        final Task task = taskManager.getTaskById(task1.getId());
         task.setStatus(Status.DONE);
         taskManager.updateTask(task1);
 
