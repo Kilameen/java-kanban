@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Epic extends Task {
-    private final List<Integer> subtaskIds;
+    public final List<Integer> subtaskIds;
 
     public Epic(String name, String description) {
         super(name, description,Status.NEW);
@@ -14,7 +14,11 @@ public class Epic extends Task {
     public List<Integer> getSubtasksByEpic() {
         return subtaskIds;
     }
-
+    public void addSubTaskId(int subTaskId) {
+        if (subTaskId != this.id) {
+            this.subtaskIds.add(subTaskId);
+        }
+    }
     @Override
     public String toString() {
         return "model.Task.Epic{" +

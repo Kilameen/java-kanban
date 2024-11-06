@@ -7,6 +7,7 @@ import taskTracker.tasks.Task;
 import java.util.List;
 
 public interface TaskManager {
+
     List<Task> getTasks();
 
     List<Epic> getEpics();
@@ -15,7 +16,7 @@ public interface TaskManager {
 
     Task getTaskById(int id);
 
-    Task getEpicById(int id);
+    Epic getEpicById(int id);
 
     Task getSubtaskById(int id);
 
@@ -23,11 +24,11 @@ public interface TaskManager {
 
     List<SubTask> getSubtasksByEpicId(int id);
 
-    void addTask(Task task);
+    Task addTask(Task task);
 
-    void addEpic(Epic epic);
+    Epic addEpic(Epic epic);
 
-    void addSubtask(SubTask subtask);
+    SubTask addSubtask(SubTask subtask);
 
     void updateTask(Task task);
 
