@@ -9,13 +9,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class ManagerTest {
     @Test
-    void getDefault() {
+    void getDefaultTest() {
         TaskManager taskManager = Managers.getDefault();
         assertNotNull(taskManager, "Утилитарный класс вернул пустой объект taskManager");
     }
 
     @Test
-    void getDefaultHistory() {
+    void getDefaultHistoryTest() {
         HistoryManager historyManager = Managers.getDefaultHistory();
         assertNotNull(historyManager, "Утилитарный класс вернул пустой объект historyManager");
     }

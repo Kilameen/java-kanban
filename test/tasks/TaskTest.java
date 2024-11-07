@@ -23,7 +23,17 @@ public class TaskTest {
 
     }
     @Test
-    public void addNewTask(){
+    void checkingTaskIfIdAreEqual(){
+        Task task = new Task("Test addNewTask", "Test addNewTask description", Status.NEW);
+        Task task1 = new Task("Test addNewTask", "Test addNewTask description", Status.NEW);
+
+        taskManager.addTask(task).setId(1);
+        taskManager.addTask(task1).setId(1);
+        assertEquals(task,task1);
+    }
+
+    @Test
+    public void addNewTaskTest(){
     Task task = new Task("Test addNewTask", "Test addNewTask description",Status.NEW);
         final int taskId = taskManager.addTask(task).getId();
         final Task savedTask = taskManager.getTaskById(taskId);

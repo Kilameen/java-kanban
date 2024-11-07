@@ -18,12 +18,12 @@ public class HistoryManagerTest {
     static TaskManager taskManager;
 
     @BeforeEach
-    void setUp() {
+    void beforeEach() {
         historyManager = Managers.getDefaultHistory();
         taskManager = Managers.getDefault();
     }
     @Test
-    void addNewHistory() {
+    void addNewHistoryTest() {
         Task task = new Task("Test addNewTask", "Test addNewTask description",Status.NEW);
         historyManager.add(task);
         final List<Task> history = historyManager.getHistory();

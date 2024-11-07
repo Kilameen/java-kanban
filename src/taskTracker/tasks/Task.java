@@ -8,6 +8,13 @@ public class Task {
     protected int id;
     protected Status status;
 
+    public Task(String name, String description,Status status, int id) {
+        this.name = name;
+        this.description = description;
+        this.id = id;
+        this.status = status;
+    }
+
     public Task(String name, String description, Status status) {
         this.name = name;
         this.description = description;

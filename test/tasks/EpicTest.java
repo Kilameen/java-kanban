@@ -19,7 +19,18 @@ public class EpicTest {
     }
 
     @Test
-    void addNewEpic() {
+    void checkingEpicIfIdAreEqual(){
+        Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description");
+        Epic epic1 = new Epic("Test addNewEpic", "Test addNewEpic description");
+
+        taskManager.addEpic(epic).setId(1);
+        taskManager.addEpic(epic1).setId(1);
+        assertEquals(epic,epic1);
+    }
+
+
+    @Test
+    void addNewEpicTest() {
         Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description");
         final int epicId= taskManager.addEpic(epic).getId();
         final Epic savedEpic = taskManager.getEpicById(epicId);
@@ -34,7 +45,7 @@ public class EpicTest {
         assertEquals(epic, epics.getFirst(), "Задачи не совпадают.");
     }
     @Test
-    void canNotAddEpicToHimself(){
+    void canNotAddEpicToHimselfTest(){
         Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description");
         final int epicId= taskManager.addEpic(epic).getId();
         epic.addSubTaskId(epicId);

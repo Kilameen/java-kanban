@@ -1,6 +1,6 @@
 package tasks;
 
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import taskTracker.manager.Managers;
 import taskTracker.manager.TaskManager;
@@ -16,17 +16,26 @@ public class SubtaskTest {
 
     static TaskManager taskManager;
 
-    @BeforeAll
-    static void initSubtask() {
+    @BeforeEach
+     void initSubtask() {
         taskManager = Managers.getDefault();
     }
-
     @Test
-    void addNewSubtask() {
+    void checkingSubtaskIfIdAreEqual(){
+        Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description");
+        SubTask subtask = new SubTask("Test addNewSubtask", "Test addNewSubtask description", Status.NEW, epic.getId());
+        SubTask subtask1 = new SubTask("Test addNewSubtask", "Test addNewSubtask description", Status.NEW, epic.getId());
+
+        taskManager.addSubtask(subtask).setId(1);
+        taskManager.addSubtask(subtask1).setId(1);
+        assertEquals(subtask,subtask1, "Экземпляры подкласса не равны друг другу");
+    }
+    @Test
+    void addNewSubtaskTest() {
         Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description");
         final int epicId = taskManager.addEpic(epic).getId();
 
-        SubTask subtask = new SubTask("Test addNewSubtask", "Test addNewSubtask description", Status.NEW, epic.getId());
+        SubTask subtask = new SubTask("Test addNewSubtask", "Test addNewSubtask description", Status.NEW,1);
         final int subtaskId = taskManager.addSubtask(subtask).getId();
         final SubTask savedSubtask = (SubTask) taskManager.getSubtaskById(subtaskId);
 
@@ -40,14 +49,10 @@ public class SubtaskTest {
         assertEquals(subtask, subTasks.getFirst(), "Задачи не совпадают.");
     }
 
-//    @Test
-//    void canNotAddSubTaskToHimselfEpic() {
-//        Epic epic = new Epic("Test addNewEpicTask", "Test addNewEpicTask description");
-//        final int epicId = taskManager.addEpic(epic).getId();
-//
-//        SubTask subTask = new SubTask("Test addNewSubTask", "Test addNewSubTask description",Status.NEW, epicId);
-//        final int subTaskId = taskManager.addSubtask(subTask).getId();
-//
-//
-//    }
+    @Test
+    void canNotAddSubTaskToHimselfEpic() {
+        SubTask subtask = new SubTask("Test addNewSubtask", "Test addNewSubtask description", Status.NEW,1);
+        assertThrows(IllegalArgumentException.class, () -> subtask.setId(1),"Подзадача сделала себя своим же эпиком");
+
+    }
 }
