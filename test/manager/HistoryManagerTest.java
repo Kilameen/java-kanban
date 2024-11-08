@@ -24,7 +24,7 @@ public class HistoryManagerTest {
     }
     @Test
     void addNewHistoryTest() {
-        Task task = new Task("Test addNewTask", "Test addNewTask description",Status.NEW);
+        Task task = new Task("Test addNewTask", "Test addNewTask description", Status.NEW);
         historyManager.add(task);
         final List<Task> history = historyManager.getHistory();
         assertNotNull(history, "История не пустая.");

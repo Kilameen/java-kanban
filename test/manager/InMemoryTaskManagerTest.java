@@ -154,7 +154,7 @@ public class InMemoryTaskManagerTest {
     @Test
     void updateSubTaskByIdTest() {
         Epic epic = new Epic("Test addEpic", "Test addEpic description");
-        SubTask subTask = new SubTask("Название", "Описание", Status.NEW, 1);
+        SubTask subTask = new SubTask("Test addSubtask", "Test addSubtask description", Status.NEW, 1);
         taskManager.addEpic(epic);
         taskManager.addSubtask(subTask);
         SubTask updatedSubTask = (SubTask) taskManager.getSubtaskById(2);

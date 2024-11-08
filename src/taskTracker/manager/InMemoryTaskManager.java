@@ -11,9 +11,11 @@ import java.util.List;
 
 
 public class InMemoryTaskManager implements TaskManager {
+
     private final HashMap<Integer, Task> tasks;
     private final HashMap<Integer, Epic> epics;
     private final HashMap<Integer, SubTask> subtasks;
+
     private final HistoryManager historyManager = Managers.getDefaultHistory();
     private int nextId;
 
@@ -43,22 +45,25 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task getTaskById(int id) {
+        historyManager.add(tasks.get(id));
         return tasks.get(id);
     }
 
     @Override
     public Epic getEpicById(int id) {
+        historyManager.add(epics.get(id));
         return epics.get(id);
     }
 
     @Override
     public SubTask getSubtaskById(int id) {
+        historyManager.add(subtasks.get(id));
         return subtasks.get(id);
     }
 
     @Override
     public List<Task> getHistory() {
-return historyManager.getHistory();
+        return historyManager.getHistory();
     }
 
     @Override
@@ -107,12 +112,11 @@ return historyManager.getHistory();
         return subtask;
     }
 
-
     //allUpdate
 
     @Override
     public void updateTask(Task task) {
-        int taskID=task.getId();
+        int taskID = task.getId();
         if (tasks.containsKey(taskID)) {
             tasks.put(taskID, task);
         }
@@ -120,7 +124,7 @@ return historyManager.getHistory();
 
     @Override
     public void updateEpic(Epic epic) {
-        int epicID=epic.getId();
+        int epicID = epic.getId();
         if (epics.containsKey(epicID)) {
             epics.put(epicID, epic);
         }
@@ -128,35 +132,36 @@ return historyManager.getHistory();
 
     @Override
     public void updateSubtask(SubTask subtask) {
-        int subTaskId=subtask.getId();
+        int subTaskId = subtask.getId();
         if (subtasks.containsKey(subTaskId)) {
             subtasks.put(subTaskId, subtask);
 
-            int epicID =subtask.getEpicID();
-                updateStatusEpicId(epicID);
+            int epicID = subtask.getEpicID();
+            updateStatusEpicId(epicID);
+        }
+    }
+
+    @Override
+    public void updateStatusEpicId(int id) {
+        int resultStatus = 0;
+        List<Integer> listSubtaskByEpic = epics.get(id).getSubtasksByEpic();
+        for (Integer integer : listSubtaskByEpic) {
+
+            if (subtasks.get(integer).getStatus() == Status.NEW) {
+                resultStatus--;
+            }
+            if (subtasks.get(integer).getStatus() == Status.DONE) {
+                resultStatus++;
             }
         }
-@Override
-public void updateStatusEpicId(int id) {
-    int resultStatus = 0;
-    List<Integer> listSubtaskByEpic = epics.get(id).getSubtasksByEpic();
-    for (Integer integer : listSubtaskByEpic) {
-
-        if (subtasks.get(integer).getStatus() == Status.NEW) {
-            resultStatus--;
-        }
-        if (subtasks.get(integer).getStatus() == Status.DONE) {
-            resultStatus++;
+        if (resultStatus == listSubtaskByEpic.size() && !listSubtaskByEpic.isEmpty()) {
+            epics.get(id).setStatus(Status.DONE);
+        } else if (resultStatus == (-listSubtaskByEpic.size()) || listSubtaskByEpic.isEmpty()) {
+            epics.get(id).setStatus(Status.NEW);
+        } else {
+            epics.get(id).setStatus(Status.IN_PROGRESS);
         }
     }
-    if (resultStatus == listSubtaskByEpic.size() && !listSubtaskByEpic.isEmpty()) {
-        epics.get(id).setStatus(Status.DONE);
-    } else if (resultStatus == (-listSubtaskByEpic.size()) || listSubtaskByEpic.isEmpty()) {
-        epics.get(id).setStatus(Status.NEW);
-    } else {
-        epics.get(id).setStatus(Status.IN_PROGRESS);
-    }
-}
 
     //allDelete
 
@@ -167,8 +172,8 @@ public void updateStatusEpicId(int id) {
 
     @Override
     public void deleteAllEpics() {
-       epics.clear();
-       subtasks.clear();
+        epics.clear();
+        subtasks.clear();
     }
 
     @Override
@@ -176,10 +181,10 @@ public void updateStatusEpicId(int id) {
         for (Epic epic : epics.values()) {
             epic.getSubtasksByEpic().clear();
             updateStatusEpicId(epic.getId());
-
         }
         subtasks.clear();
     }
+
     @Override
     public void deleteTask(int id) {
         Task removedTask = tasks.remove(id);
@@ -206,6 +211,4 @@ public void updateStatusEpicId(int id) {
             }
         }
     }
-
-
 }

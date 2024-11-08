@@ -21,12 +21,21 @@ public class Main {
         taskManager.addTask(task2);
         taskManager.addTask(task3);
 
+        taskManager.getTaskById(task1.getId());
+        taskManager.getTaskById(task2.getId());
+        taskManager.getTaskById(task3.getId());
+
+
         Epic epic1 = new Epic("Epic_1", "Epic_desc_1");
         Epic epic2 = new Epic("Epic_2", "Epic_desc_2");
         Epic epic3 = new Epic("Epic_3", "Epic_desc_3");
         taskManager.addEpic(epic1);
         taskManager.addEpic(epic2);
         taskManager.addEpic(epic3);
+
+        taskManager.getEpicById(epic1.getId());
+        taskManager.getEpicById(epic2.getId());
+        taskManager.getEpicById(epic3.getId());
 
         SubTask subtask1 = new SubTask("Subtask_1_1", "Subtask_desc_1_1", Status.NEW, epic1.getId());
         SubTask subtask2 = new SubTask("Subtask_1_2", "Subtask_desc_1_2", Status.DONE, epic1.getId());
@@ -42,6 +51,15 @@ public class Main {
         taskManager.addSubtask(subtask4);
         taskManager.addSubtask(subtask5);
         taskManager.addSubtask(subtask6);
+
+        taskManager.getSubtaskById(subtask1.getId());
+        taskManager.getSubtaskById(subtask2.getId());
+        taskManager.getSubtaskById(subtask3.getId());
+        taskManager.getSubtaskById(subtask4.getId());
+        taskManager.getSubtaskById(subtask5.getId());
+        taskManager.getSubtaskById(subtask6.getId());
+
+
         printAllTasks(taskManager);
 
         final Task task = taskManager.getTaskById(task1.getId());
@@ -70,11 +88,8 @@ public class Main {
 
         System.out.println("\nEpics:");
         for (Epic epic : taskManager.getEpics()) {
-
             System.out.println("\n" + epic.toString());
-
             for (SubTask subTask : taskManager.getSubtasksByEpicId(epic.getId())) {
-
                 System.out.println("--> " + subTask.toString());
             }
         }
@@ -82,6 +97,11 @@ public class Main {
         System.out.println("\nSubtasks:");
         for (SubTask subTask : taskManager.getSubtasks()) {
             System.out.println(subTask.toString());
+        }
+
+        System.out.println("\nHistory:");
+        for (Task task : taskManager.getHistory()) {
+            System.out.println(task);
         }
     }
 }
