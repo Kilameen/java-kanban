@@ -1,7 +1,6 @@
 package taskTracker.manager;
 
 import taskTracker.tasks.Task;
-
 import java.util.List;
 
 public interface HistoryManager {

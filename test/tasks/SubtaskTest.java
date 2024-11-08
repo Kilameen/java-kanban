@@ -7,19 +7,17 @@ import taskTracker.manager.TaskManager;
 import taskTracker.tasks.Epic;
 import taskTracker.tasks.Status;
 import taskTracker.tasks.SubTask;
-
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SubtaskTest {
-
     static TaskManager taskManager;
 
     @BeforeEach
      void initSubtask() {
         taskManager = Managers.getDefault();
     }
+
     @Test
     void checkingSubtaskIfIdAreEqual(){
         Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description");
@@ -30,6 +28,7 @@ public class SubtaskTest {
         taskManager.addSubtask(subtask1).setId(1);
         assertEquals(subtask,subtask1, "Экземпляры подкласса не равны друг другу");
     }
+
     @Test
     void addNewSubtaskTest() {
         Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description");
@@ -53,6 +52,5 @@ public class SubtaskTest {
     void canNotAddSubTaskToHimselfEpic() {
         SubTask subtask = new SubTask("Test addNewSubtask", "Test addNewSubtask description", Status.NEW,1);
         assertThrows(IllegalArgumentException.class, () -> subtask.setId(1),"Подзадача сделала себя своим же эпиком");
-
     }
 }

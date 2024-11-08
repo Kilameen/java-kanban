@@ -3,7 +3,6 @@ package taskTracker.manager;
 import taskTracker.tasks.Epic;
 import taskTracker.tasks.SubTask;
 import taskTracker.tasks.Task;
-
 import java.util.List;
 
 public interface TaskManager {

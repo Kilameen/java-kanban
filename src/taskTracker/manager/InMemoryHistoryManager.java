@@ -1,7 +1,6 @@
 package taskTracker.manager;
 
 import taskTracker.tasks.Task;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +10,6 @@ public class InMemoryHistoryManager implements HistoryManager {
     public InMemoryHistoryManager() {
         this.historyList = new ArrayList<>();
     }
-
 
     @Override
     public void add(Task task) {

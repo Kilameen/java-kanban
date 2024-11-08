@@ -7,11 +7,9 @@ import taskTracker.manager.Managers;
 import taskTracker.manager.TaskManager;
 import taskTracker.tasks.Status;
 import taskTracker.tasks.Task;
-
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class HistoryManagerTest {
     static HistoryManager historyManager;
@@ -22,6 +20,7 @@ public class HistoryManagerTest {
         historyManager = Managers.getDefaultHistory();
         taskManager = Managers.getDefault();
     }
+
     @Test
     void addNewHistoryTest() {
         Task task = new Task("Test addNewTask", "Test addNewTask description", Status.NEW);
@@ -31,4 +30,15 @@ public class HistoryManagerTest {
         assertEquals(1, history.size(), "История не пустая.");
     }
 
+    @Test
+    void historyVersionTest() {
+        Task task = new Task("Test addNewTask", "Test addNewTask description", Status.NEW);
+        final int taskId = taskManager.addTask(task).getId();
+        taskManager.getTaskById(taskId);
+        assertEquals(1, taskManager.getHistory().size(), "История просмотров не сохранена!");
+        taskManager.updateTask(new Task(task.getName(), task.getDescription(), Status.IN_PROGRESS, task.getId()));
+        taskManager.getTaskById(taskId);
+        assertEquals(2, taskManager.getHistory().size(), "История просмотров не сохранена!");
+        assertNotEquals(taskManager.getHistory().getFirst(), taskManager.getHistory().getLast(), "История не сохраняет предыдущую версию задачи!");
+    }
 }

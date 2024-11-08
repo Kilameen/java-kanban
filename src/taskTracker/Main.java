@@ -29,6 +29,7 @@ public class Main {
         Epic epic1 = new Epic("Epic_1", "Epic_desc_1");
         Epic epic2 = new Epic("Epic_2", "Epic_desc_2");
         Epic epic3 = new Epic("Epic_3", "Epic_desc_3");
+
         taskManager.addEpic(epic1);
         taskManager.addEpic(epic2);
         taskManager.addEpic(epic3);
@@ -77,7 +78,6 @@ public class Main {
         System.out.println("\nУдалить все задачи:");
         taskManager.deleteAllTasks();
         printAllTasks(taskManager);
-
     }
 
     public static void printAllTasks(TaskManager taskManager) {

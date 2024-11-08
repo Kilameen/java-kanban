@@ -8,7 +8,6 @@ import taskTracker.tasks.Epic;
 import taskTracker.tasks.Status;
 import taskTracker.tasks.SubTask;
 import taskTracker.tasks.Task;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class InMemoryTaskManagerTest {
@@ -150,7 +149,6 @@ public class InMemoryTaskManagerTest {
         assertEquals("Test: changed description", taskManager.getEpicById(1).getDescription());
     }
 
-
     @Test
     void updateSubTaskByIdTest() {
         Epic epic = new Epic("Test addEpic", "Test addEpic description");
@@ -169,18 +167,6 @@ public class InMemoryTaskManagerTest {
         final int taskId = taskManager.addTask(task).getId();
         taskManager.updateTask(new Task(task.getName(), task.getDescription(), task.getStatus(), taskId + 1));
         assertNull(taskManager.getTaskById(taskId + 1), "Задачи с заданным id и сгенерированным id конфликтуют внутри менеджера!");
-    }
-
-    @Test
-    void historyVersionTest() {
-        Task task = new Task("Test addNewTask", "Test addNewTask description", Status.NEW);
-        final int taskId = taskManager.addTask(task).getId();
-        taskManager.getTaskById(taskId);
-        assertEquals(1, taskManager.getHistory().size(), "История просмотров не сохранена!");
-        taskManager.updateTask(new Task(task.getName(), task.getDescription(), Status.IN_PROGRESS, task.getId()));
-        taskManager.getTaskById(taskId);
-        assertEquals(2, taskManager.getHistory().size(), "История просмотров не сохранена!");
-        assertNotEquals(taskManager.getHistory().getFirst(), taskManager.getHistory().getLast(), "История не сохраняет предыдущую версию задачи!");
     }
 
     @Test
