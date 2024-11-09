@@ -1,9 +1,9 @@
-package taskTracker.manager;
+package tracker.manager;
 
-import taskTracker.tasks.Epic;
-import taskTracker.tasks.Status;
-import taskTracker.tasks.SubTask;
-import taskTracker.tasks.Task;
+import tracker.tasks.Epic;
+import tracker.tasks.Status;
+import tracker.tasks.SubTask;
+import tracker.tasks.Task;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -139,7 +139,6 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    @Override
     public void updateStatusEpicId(int id) {
         int resultStatus = 0;
         List<Integer> listSubtaskByEpic = epics.get(id).getSubtasksByEpic();

@@ -1,11 +1,11 @@
-package taskTracker;
+package tracker;
 
-import taskTracker.manager.Managers;
-import taskTracker.manager.TaskManager;
-import taskTracker.tasks.Epic;
-import taskTracker.tasks.Status;
-import taskTracker.tasks.SubTask;
-import taskTracker.tasks.Task;
+import tracker.manager.Managers;
+import tracker.manager.TaskManager;
+import tracker.tasks.Epic;
+import tracker.tasks.Status;
+import tracker.tasks.SubTask;
+import tracker.tasks.Task;
 
 public class Main {
 

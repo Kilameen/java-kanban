@@ -1,8 +1,8 @@
-package taskTracker.manager;
+package tracker.manager;
 
-import taskTracker.tasks.Epic;
-import taskTracker.tasks.SubTask;
-import taskTracker.tasks.Task;
+import tracker.tasks.Epic;
+import tracker.tasks.SubTask;
+import tracker.tasks.Task;
 import java.util.List;
 
 public interface TaskManager {
@@ -34,8 +34,6 @@ public interface TaskManager {
     void updateEpic(Epic epic);
 
     void updateSubtask(SubTask subtask);
-
-    void updateStatusEpicId(int id);
 
     void deleteAllTasks();
 
