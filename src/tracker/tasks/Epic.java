@@ -19,6 +19,7 @@ public class Epic extends Task {
             this.subtaskIds.add(subTaskId);
         }
     }
+
     @Override
     public String toString() {
         return "model.Task.Epic{" +
@@ -29,5 +30,4 @@ public class Epic extends Task {
                 ", subtaskIds=" + subtaskIds +
                 '}';
     }
-
 }
