@@ -13,66 +13,72 @@ public class Main {
         System.out.println("Поехали!");
         TaskManager taskManager = Managers.getDefault();
 
+        //Создаем 2 задачи
+
         Task task1 = new Task("Task_1", "Task_desc_1", Status.NEW);
         Task task2 = new Task("Task_2", "Task_desc_2", Status.IN_PROGRESS);
-        Task task3 = new Task("Task_3", "Task_desc_3", Status.DONE);
 
         taskManager.addTask(task1);
         taskManager.addTask(task2);
-        taskManager.addTask(task3);
 
         taskManager.getTaskById(task1.getId());
         taskManager.getTaskById(task2.getId());
-        taskManager.getTaskById(task3.getId());
 
+        //Создаем 2 эпика, один эпик с 3 подзадачами, один пустой
 
         Epic epic1 = new Epic("Epic_1", "Epic_desc_1");
         Epic epic2 = new Epic("Epic_2", "Epic_desc_2");
-        Epic epic3 = new Epic("Epic_3", "Epic_desc_3");
 
         taskManager.addEpic(epic1);
         taskManager.addEpic(epic2);
-        taskManager.addEpic(epic3);
 
         taskManager.getEpicById(epic1.getId());
         taskManager.getEpicById(epic2.getId());
-        taskManager.getEpicById(epic3.getId());
 
         SubTask subtask1 = new SubTask("Subtask_1_1", "Subtask_desc_1_1", Status.NEW, epic1.getId());
-        SubTask subtask2 = new SubTask("Subtask_1_2", "Subtask_desc_1_2", Status.DONE, epic1.getId());
-        SubTask subtask3 = new SubTask("Subtask_2_1", "Subtask_desc_2_1", Status.DONE, epic2.getId());
-        SubTask subtask4 = new SubTask("Subtask_2_2", "Subtask_desc_2_2", Status.DONE, epic2.getId());
-        SubTask subtask5 = new SubTask("Subtask_3_1", "Subtask_desc_3_1", Status.NEW, epic3.getId());
-        SubTask subtask6 = new SubTask("Subtask_3_2", "Subtask_desc_3_2", Status.NEW, epic3.getId());
-
+        SubTask subtask2 = new SubTask("Subtask_1_2", "Subtask_desc_1_2", Status.IN_PROGRESS, epic1.getId());
+        SubTask subtask3 = new SubTask("Subtask_2_1", "Subtask_desc_2_1", Status.DONE, epic1.getId());
 
         taskManager.addSubtask(subtask1);
         taskManager.addSubtask(subtask2);
         taskManager.addSubtask(subtask3);
-        taskManager.addSubtask(subtask4);
-        taskManager.addSubtask(subtask5);
-        taskManager.addSubtask(subtask6);
 
         taskManager.getSubtaskById(subtask1.getId());
         taskManager.getSubtaskById(subtask2.getId());
         taskManager.getSubtaskById(subtask3.getId());
-        taskManager.getSubtaskById(subtask4.getId());
-        taskManager.getSubtaskById(subtask5.getId());
-        taskManager.getSubtaskById(subtask6.getId());
 
+        //Запрашиваем созданные задачи несколько раз в разном порядке.
 
-        printAllTasks(taskManager);
+        System.out.println("\n Запрос созданной задачи : \n" + "\n" + taskManager.getTaskById(1));
+        System.out.println("Запрос созданной задачи : \n" + "\n" + taskManager.getTaskById(2));
+        System.out.println("Запрос созданной задачи : \n" + "\n" + taskManager.getTaskById(1));
 
-        final Task task = taskManager.getTaskById(task1.getId());
-        task.setStatus(Status.DONE);
-        taskManager.updateTask(task1);
+        System.out.println("\n Показать историю : \n" + taskManager.getHistory());
 
-        printAllTasks(taskManager);
+        System.out.println("\n Запрос созданной задачи : \n" + "\n" + taskManager.getTaskById(2));
+        System.out.println("Запрос созданной задачи : \n" + "\n" + taskManager.getTaskById(1));
+        System.out.println("Запрос созданной задачи : \n" + "\n" + taskManager.getTaskById(2));
 
-        System.out.println("DELETE: " + task1.getName());
+        System.out.println("\n Показать историю : \n" + taskManager.getHistory());
+
+        //Удаляем задчу и проверям историю
+        System.out.println("Удаляем задачу: " + task1.getName());
         taskManager.deleteTask(task1.getId());
-        System.out.println("DELETE: " + epic1.getName());
+        System.out.println("\n Показать историю : \n" + taskManager.getHistory());
+
+        //Удаляем эпик и проверяем историю
+        System.out.println("Удаляем эпик: " + epic1.getName());
         taskManager.deleteEpic(epic1.getId());
+        System.out.println("\n Показать историю : \n" + taskManager.getHistory());
+
+        System.out.println("_".repeat(100));
+        System.out.println("Выводы в консоль 5-го спринта");
+        printAllTasks(taskManager);
+
+        final Task task = taskManager.getTaskById(task2.getId());
+        task.setStatus(Status.DONE);
+        taskManager.updateTask(task2);
+
         printAllTasks(taskManager);
 
         System.out.println("\nУдалить все задачи:");
