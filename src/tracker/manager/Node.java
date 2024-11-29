@@ -1,12 +1,12 @@
 package tracker.manager;
 
-class Node<NodeTask> { // отдельный класс Node для узла списка
+class Node<TASK> {
 
-    public NodeTask data;
-    public Node<NodeTask> next;
-    public Node<NodeTask> prev;
+    public TASK data;
+    public Node<TASK> next;
+    public Node<TASK> prev;
 
-    public Node(Node<NodeTask> prev, NodeTask data, Node<NodeTask> next) {
+    public Node(Node<TASK> prev, TASK data, Node<TASK> next) {
         this.data = data;
         this.next = next;
         this.prev = prev;
