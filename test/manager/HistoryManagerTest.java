@@ -78,16 +78,13 @@ public class HistoryManagerTest {
 
     @Test
     public void checkingTheOrderOfTasksInTheHistoryForRepeatedRequests(){
-        addTaskToHistory();
-        historyManager.add(task1);
-        historyManager.add(task2);
-        historyManager.add(task3);
+        taskManager.addTask(task1);
+        taskManager.addTask(task2);
 
-        taskManager.getTaskById(task1.getId());
-        taskManager.getTaskById(task2.getId());
-        taskManager.getTaskById(task1.getId());
-        taskManager.getTaskById(task3.getId());
+        taskManager.getTaskById(1);
+        taskManager.getTaskById(2);
+        taskManager.getTaskById(1);
 
-        assertEquals(List.of(task1, task2, task3), historyManager.getHistory(),"Задача была добавлена!");
+        assertEquals(List.of(task2, task1), taskManager.getHistory(),"Задача была добавлена!");
     }
 }
