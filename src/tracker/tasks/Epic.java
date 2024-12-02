@@ -14,11 +14,13 @@ public class Epic extends Task {
     public List<Integer> getSubtasksByEpic() {
         return subtaskIds;
     }
+
     public void addSubTaskId(int subTaskId) {
         if (subTaskId != this.id) {
             this.subtaskIds.add(subTaskId);
         }
     }
+
     @Override
     public String toString() {
         return "model.Task.Epic{" +
@@ -29,5 +31,4 @@ public class Epic extends Task {
                 ", subtaskIds=" + subtaskIds +
                 '}';
     }
-
 }

@@ -18,6 +18,28 @@ public class HistoryManagerTest {
     protected String TASK_NAME_TEXT = "Test addTask";
     protected String TASK_DESCRIPTION_TEXT = "Test addTask description";
 
+    Task task1 = new Task(TASK_NAME_TEXT, TASK_DESCRIPTION_TEXT, Status.NEW);
+    Task task2 = new Task(TASK_NAME_TEXT, TASK_DESCRIPTION_TEXT, Status.NEW);
+    Task task3 = new Task(TASK_NAME_TEXT, TASK_DESCRIPTION_TEXT, Status.NEW);
+
+    public void addTaskToHistory() {
+        taskManager.addTask(task1);
+        taskManager.addTask(task2);
+        taskManager.addTask(task3);
+
+        final int taskId1 = taskManager.addTask(task1).getId();
+        final int taskId2 = taskManager.addTask(task2).getId();
+        final int taskId3 = taskManager.addTask(task3).getId();
+
+        task1.setId(taskId1);
+        task2.setId(taskId2);
+        task3.setId(taskId3);
+
+        historyManager.add(task1);
+        historyManager.add(task2);
+        historyManager.add(task3);
+    }
+
     @BeforeEach
     void beforeEach() {
         historyManager = Managers.getDefaultHistory();
@@ -26,8 +48,8 @@ public class HistoryManagerTest {
 
     @Test
     void addNewHistoryTest() {
-        Task task = new Task(TASK_NAME_TEXT, TASK_DESCRIPTION_TEXT, Status.NEW);
-        historyManager.add(task);
+        taskManager.addTask(task1);
+        historyManager.add(task1);
         final List<Task> history = historyManager.getHistory();
         assertNotNull(history, "История не пустая.");
         assertEquals(1, history.size(), "История не пустая.");
@@ -35,13 +57,34 @@ public class HistoryManagerTest {
 
     @Test
     void historyVersionTest() {
-        Task task = new Task(TASK_NAME_TEXT, TASK_DESCRIPTION_TEXT, Status.NEW);
-        final int taskId = taskManager.addTask(task).getId();
+        taskManager.addTask(task1);
+        final int taskId = taskManager.addTask(task1).getId();
         taskManager.getTaskById(taskId);
         assertEquals(1, taskManager.getHistory().size(), "История просмотров не сохранена!");
-        taskManager.updateTask(new Task(task.getName(), task.getDescription(), Status.IN_PROGRESS, task.getId()));
-        taskManager.getTaskById(taskId);
-        assertEquals(2, taskManager.getHistory().size(), "История просмотров не сохранена!");
-        assertNotEquals(taskManager.getHistory().getFirst(), taskManager.getHistory().getLast(), "История не сохраняет предыдущую версию задачи!");
+    }
+
+    @Test
+    public void shouldAddTasksToHistory() {
+        addTaskToHistory();
+        assertEquals(List.of(task1, task2, task3), historyManager.getHistory(),"Задача не добавилась");
+    }
+
+    @Test
+    public void shouldRemoveTask() {
+        addTaskToHistory();
+        historyManager.remove(task2.getId());
+        assertEquals(List.of(task1, task3), historyManager.getHistory(),"Задача не была удалена!");
+    }
+
+    @Test
+    public void checkingTheOrderOfTasksInTheHistoryForRepeatedRequests(){
+        taskManager.addTask(task1);
+        taskManager.addTask(task2);
+
+        taskManager.getTaskById(1);
+        taskManager.getTaskById(2);
+        taskManager.getTaskById(1);
+
+        assertEquals(List.of(task2, task1), taskManager.getHistory(),"Задача была добавлена!");
     }
 }
