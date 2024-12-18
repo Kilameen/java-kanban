@@ -8,10 +8,15 @@ public class SubTask extends Task {
         this.epicID = epicID;
     }
 
+    public SubTask(int id, String name, String description, Status status, int epicID) {
+        super(id, name, description, status);
+        this.epicID = epicID;
+    }
+
+
     public int getEpicID() {
         return epicID;
     }
-
     @Override
     public void setId(int id) {
         if (epicID == id) {
@@ -19,7 +24,6 @@ public class SubTask extends Task {
         }
         super.setId(id);
     }
-
     @Override
     public String toString() {
         return "model.Subtask{" +
