@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Epic extends Task {
-    public final List<Integer> subtaskIds = new ArrayList<>();;
+    public final List<Integer> subtaskIds = new ArrayList<>();
 
     public Epic(String name, String description) {
         super(name, description,Status.NEW);
@@ -17,15 +17,16 @@ public class Epic extends Task {
         setId(id);
     }
 
-
     public List<Integer> getSubtasksByEpic() {
         return subtaskIds;
     }
+
     public void addSubTaskId(int subTaskId) {
         if (subTaskId != this.id) {
             this.subtaskIds.add(subTaskId);
         }
     }
+
     @Override
     public String toString() {
         return "model.Task.Epic{" +
@@ -36,5 +37,4 @@ public class Epic extends Task {
                 ", subtaskIds=" + subtaskIds +
                 '}';
     }
-
 }
