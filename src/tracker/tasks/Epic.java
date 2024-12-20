@@ -7,12 +7,11 @@ public class Epic extends Task {
     public final List<Integer> subtaskIds = new ArrayList<>();
 
     public Epic(String name, String description) {
-        super(name, description,Status.NEW);
-
+        super(name, description, Status.NEW);
     }
 
     public Epic(int id, String name, String description, Status status) {
-        super(name, description,status);
+        super(name, description, status);
         setId(id);
     }
 
@@ -26,7 +25,7 @@ public class Epic extends Task {
         }
     }
 
-    public  Type getType(){
+    public Type getType() {
         return Type.EPIC;
     }
 

@@ -13,13 +13,14 @@ public class SubTask extends Task {
         this.epicID = epicID;
     }
 
-    public Type getType(){
+    public Type getType() {
         return Type.SUBTASK;
     }
 
     public int getEpicID() {
         return epicID;
     }
+
     @Override
     public void setId(int id) {
         if (epicID == id) {

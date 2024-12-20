@@ -17,7 +17,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private void save() {
         try (FileWriter fileWriter = new FileWriter(file, StandardCharsets.UTF_8);
-             BufferedWriter writer = new BufferedWriter(fileWriter)){
+             BufferedWriter writer = new BufferedWriter(fileWriter)) {
             writer.write(FILE_TITLE);
             writer.write("\n");
 
@@ -188,7 +188,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void deleteAll(){
+    public void deleteAll() {
         super.deleteAll();
         save();
     }

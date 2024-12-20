@@ -179,7 +179,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void deleteAll(){
+    public void deleteAll() {
         tasks.clear();
         epics.clear();
         subtasks.clear();
