@@ -13,14 +13,17 @@ public class SubTask extends Task {
         this.epicID = epicID;
     }
 
+    public Type getType(){
+        return Type.SUBTASK;
+    }
+
     public int getEpicID() {
         return epicID;
     }
-
     @Override
     public void setId(int id) {
         if (epicID == id) {
-            throw new IllegalArgumentException("SubTaskId can't be equal to epicId.");
+            throw new IllegalArgumentException("Subtask id не может быть равен epicID.");
         }
         super.setId(id);
     }

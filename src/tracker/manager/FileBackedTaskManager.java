@@ -15,8 +15,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         this.file = file;
     }
 
-    public void save() {
-        try (Writer writer = new FileWriter(file, StandardCharsets.UTF_8)) {
+    private void save() {
+        try (FileWriter fileWriter = new FileWriter(file, StandardCharsets.UTF_8);
+             BufferedWriter writer = new BufferedWriter(fileWriter)){
             writer.write(FILE_TITLE);
             writer.write("\n");
 
@@ -25,13 +26,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 writer.write("\n");
             }
 
-            for (Task task : getEpics()) {
-                writer.write(taskToString(task));
+            for (Task epic : getEpics()) {
+                writer.write(taskToString(epic));
                 writer.write("\n");
             }
 
-            for (Task task : getSubtasks()) {
-                writer.write(taskToString(task));
+            for (Task subTask : getSubtasks()) {
+                writer.write(taskToString(subTask));
                 writer.write("\n");
             }
 
@@ -40,7 +41,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-    public void load() {
+    private void load() {
         try (Reader reader = new FileReader(file, StandardCharsets.UTF_8);
              BufferedReader bufferedReader = new BufferedReader(reader)) {
             bufferedReader.readLine();
@@ -82,18 +83,22 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private Task fromString(String line) {
         String[] parameters = line.split(",");
+        int id = Integer.parseInt(parameters[0]);
         Type type = Type.valueOf(parameters[1]);
+        String name = parameters[2];
+        Status status = Status.valueOf(parameters[3]);
+        String description = parameters[4];
         Task task;
         try {
             switch (type) {
                 case TASK:
-                    task = new Task(Integer.parseInt(parameters[0]), parameters[2], parameters[4], Status.valueOf(parameters[3]));
+                    task = new Task(id, name, description, status);
                     break;
                 case EPIC:
-                    task = new Epic(Integer.parseInt(parameters[0]), parameters[2], parameters[4], Status.valueOf(parameters[3]));
+                    task = new Epic(id, name, description, status);
                     break;
                 case SUBTASK:
-                    task = new SubTask(Integer.parseInt(parameters[0]), parameters[2], parameters[4], Status.valueOf(parameters[3]), Integer.parseInt(parameters[5]));
+                    task = new SubTask(id, name, description, status, Integer.parseInt(parameters[5]));
                     break;
                 default:
                     throw new ManagerSaveException("Неизвестный тип задачи: " + type);
@@ -111,67 +116,80 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public Task addTask(Task task) {
-        return super.addTask(task);
+    public void addTask(Task task) {
+        super.addTask(task);
+        save();
     }
 
     @Override
-    public Epic addEpic(Epic epic) {
-        return super.addEpic(epic);
+    public void addEpic(Epic epic) {
+        super.addEpic(epic);
+        save();
     }
 
     @Override
-    public SubTask addSubtask(SubTask subtask) {
-        return super.addSubtask(subtask);
+    public void addSubtask(SubTask subtask) {
+        super.addSubtask(subtask);
+        save();
     }
 
     @Override
     public void updateTask(Task task) {
         super.updateTask(task);
+        save();
     }
 
     @Override
     public void updateEpic(Epic epic) {
         super.updateEpic(epic);
+        save();
     }
 
     @Override
     public void updateSubtask(SubTask subtask) {
         super.updateSubtask(subtask);
-    }
-
-    @Override
-    public void updateStatusEpicId(int id) {
-        super.updateStatusEpicId(id);
+        save();
     }
 
     @Override
     public void deleteAllTasks() {
         super.deleteAllTasks();
+        save();
     }
 
     @Override
     public void deleteAllEpics() {
         super.deleteAllEpics();
+        save();
     }
 
     @Override
     public void deleteAllSubtasks() {
         super.deleteAllSubtasks();
+        save();
     }
 
     @Override
     public void deleteTask(int id) {
         super.deleteTask(id);
+        save();
     }
 
     @Override
     public void deleteEpic(int id) {
         super.deleteEpic(id);
+        save();
     }
 
     @Override
     public void deleteSubtask(int id) {
         super.deleteSubtask(id);
+        save();
+    }
+
+    @Override
+    public void deleteAll(){
+        super.deleteAll();
+        save();
     }
 }

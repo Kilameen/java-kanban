@@ -11,7 +11,6 @@ public class Epic extends Task {
 
     }
 
-
     public Epic(int id, String name, String description, Status status) {
         super(name, description,status);
         setId(id);
@@ -25,6 +24,10 @@ public class Epic extends Task {
         if (subTaskId != this.id) {
             this.subtaskIds.add(subTaskId);
         }
+    }
+
+    public  Type getType(){
+        return Type.EPIC;
     }
 
     @Override

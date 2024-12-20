@@ -27,9 +27,9 @@ public class HistoryManagerTest {
         taskManager.addTask(task2);
         taskManager.addTask(task3);
 
-        final int taskId1 = taskManager.addTask(task1).getId();
-        final int taskId2 = taskManager.addTask(task2).getId();
-        final int taskId3 = taskManager.addTask(task3).getId();
+        final int taskId1 = task1.getId();
+        final int taskId2 = task2.getId();
+        final int taskId3 = task3.getId();
 
         task1.setId(taskId1);
         task2.setId(taskId2);
@@ -58,7 +58,7 @@ public class HistoryManagerTest {
     @Test
     void historyVersionTest() {
         taskManager.addTask(task1);
-        final int taskId = taskManager.addTask(task1).getId();
+        final int taskId = task1.getId();
         taskManager.getTaskById(taskId);
         assertEquals(1, taskManager.getHistory().size(), "История просмотров не сохранена!");
     }

@@ -82,32 +82,28 @@ public class InMemoryTaskManager implements TaskManager {
 //allAdd
 
     @Override
-    public Task addTask(Task task) {
+    public void addTask(Task task) {
         task.setId(nextId++);
         tasks.put(task.getId(), task);
-        return task;
     }
 
     @Override
-    public Epic addEpic(Epic epic) {
+    public void addEpic(Epic epic) {
         epic.setId(nextId++);
         epics.put(epic.getId(), epic);
-
-        return epic;
     }
 
     @Override
-    public SubTask addSubtask(SubTask subtask) {
+    public void addSubtask(SubTask subtask) {
         subtask.setId(nextId++);
         subtasks.put(subtask.getId(), subtask);
         Epic epic = epics.get(subtask.getEpicID());
 
         if (epic == null) {
-            return subtask;
+            return;
         }
         epic.getSubtasksByEpic().add(subtask.getId());
-        updateStatusEpicId(epic.getId());
-        return subtask;
+        updateEpicStatus(epic.getId());
     }
 
     //allUpdate
@@ -135,11 +131,11 @@ public class InMemoryTaskManager implements TaskManager {
             subtasks.put(subTaskId, subtask);
 
             int epicID = subtask.getEpicID();
-            updateStatusEpicId(epicID);
+            updateEpicStatus(epicID);
         }
     }
 
-    public void updateStatusEpicId(int id) {
+    public void updateEpicStatus(int id) {
         int resultStatus = 0;
         List<Integer> listSubtaskByEpic = epics.get(id).getSubtasksByEpic();
         for (Integer integer : listSubtaskByEpic) {
@@ -177,8 +173,15 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteAllSubtasks() {
         for (Epic epic : epics.values()) {
             epic.getSubtasksByEpic().clear();
-            updateStatusEpicId(epic.getId());
+            updateEpicStatus(epic.getId());
         }
+        subtasks.clear();
+    }
+
+    @Override
+    public void deleteAll(){
+        tasks.clear();
+        epics.clear();
         subtasks.clear();
     }
 
@@ -204,7 +207,7 @@ public class InMemoryTaskManager implements TaskManager {
             Epic epic = epics.get(removedSubtask.getEpicID());
             if (epic != null) {
                 epic.getSubtasksByEpic().remove((Integer) id);
-                updateStatusEpicId(epic.getId());
+                updateEpicStatus(epic.getId());
             }
         }
     }
