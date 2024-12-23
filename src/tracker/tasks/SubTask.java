@@ -8,6 +8,15 @@ public class SubTask extends Task {
         this.epicID = epicID;
     }
 
+    public SubTask(int id, String name, String description, Status status, int epicID) {
+        super(id, name, description, status);
+        this.epicID = epicID;
+    }
+
+    public Type getType() {
+        return Type.SUBTASK;
+    }
+
     public int getEpicID() {
         return epicID;
     }
@@ -15,7 +24,7 @@ public class SubTask extends Task {
     @Override
     public void setId(int id) {
         if (epicID == id) {
-            throw new IllegalArgumentException("SubTaskId can't be equal to epicId.");
+            throw new IllegalArgumentException("Subtask id не может быть равен epicID.");
         }
         super.setId(id);
     }

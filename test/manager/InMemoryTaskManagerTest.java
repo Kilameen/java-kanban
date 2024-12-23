@@ -1,5 +1,6 @@
 package manager;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tracker.manager.Managers;
@@ -59,8 +60,8 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void addNewTaskTest() {
-        final int taskId = taskManager.addTask(task1).getId();
-        final Task savedTask = taskManager.getTaskById(taskId);
+        taskManager.addTask(task1);
+        final Task savedTask = taskManager.getTaskById(1);
 
         assertNotNull(savedTask, "Задача не найдена.");
         assertEquals(task1, savedTask, "Задачи не совпадают.");
@@ -74,8 +75,8 @@ public class InMemoryTaskManagerTest {
 
     @Test
     void addNewEpicTest() {
-        final int epicId = taskManager.addEpic(epic1).getId();
-        final Epic savedEpic = taskManager.getEpicById(epicId);
+        taskManager.addEpic(epic1);
+        final Epic savedEpic = taskManager.getEpicById(1);
 
         assertNotNull(savedEpic, "Задача не найдена.");
         assertEquals(epic1, savedEpic, "Задачи не совпадают.");
@@ -89,10 +90,10 @@ public class InMemoryTaskManagerTest {
 
     @Test
     void addNewSubtaskTest() {
-        final int epicId = taskManager.addEpic(epic1).getId();
+        taskManager.addEpic(epic1);
         SubTask subtask = new SubTask(SUBTASK_NAME_TEXT, SUBTASK_DESCRIPTION_TEXT, Status.NEW, 1);
-        final int subtaskId = taskManager.addSubtask(subtask).getId();
-        final SubTask savedSubtask = (SubTask) taskManager.getSubtaskById(subtaskId);
+        taskManager.addSubtask(subtask);
+        final SubTask savedSubtask = (SubTask) taskManager.getSubtaskById(2);
 
         assertNotNull(savedSubtask, "Задача не найдена.");
         assertEquals(subtask, savedSubtask, "Задачи не совпадают.");
@@ -210,47 +211,55 @@ public class InMemoryTaskManagerTest {
 
     @Test
     void checkingTaskIfIdAreEqual() {
-        taskManager.addTask(task1).setId(1);
-        taskManager.addTask(task2).setId(1);
+        taskManager.addTask(task1);
+        task1.setId(1);
+        taskManager.addTask(task2);
+        task2.setId(1);
         assertEquals(task1, task2);
     }
 
     @Test
     void checkingEpicIfIdAreEqual() {
-        taskManager.addEpic(epic1).setId(1);
-        taskManager.addEpic(epic2).setId(1);
+        taskManager.addEpic(epic1);
+        epic1.setId(1);
+        taskManager.addEpic(epic2);
+        epic2.setId(1);
         assertEquals(epic1, epic2);
     }
 
     @Test
     void checkingSubtaskIfIdAreEqual() {
-        Epic epic = new Epic(EPIC_NAME_TEXT, EPIC_DESCRIPTION_TEXT);
-        SubTask subtask = new SubTask(SUBTASK_NAME_TEXT, SUBTASK_DESCRIPTION_TEXT, Status.NEW, epic.getId());
-        SubTask subtask1 = new SubTask(SUBTASK_NAME_TEXT, SUBTASK_DESCRIPTION_TEXT, Status.NEW, epic.getId());
+        Epic epic1 = new Epic(EPIC_NAME_TEXT, EPIC_DESCRIPTION_TEXT);
+        taskManager.addEpic(epic1);
+        epic1.setId(1);
+        SubTask subtask = new SubTask(SUBTASK_NAME_TEXT, SUBTASK_DESCRIPTION_TEXT, Status.NEW, epic1.getId());
+        SubTask subtask1 = new SubTask(SUBTASK_NAME_TEXT, SUBTASK_DESCRIPTION_TEXT, Status.NEW, epic1.getId());
 
-        taskManager.addSubtask(subtask).setId(1);
-        taskManager.addSubtask(subtask1).setId(1);
+        taskManager.addSubtask(subtask);
+        subtask.setId(2);
+        taskManager.addSubtask(subtask1);
+        subtask1.setId(2);
         assertEquals(subtask, subtask1, "Экземпляры подкласса не равны друг другу");
     }
 
     @Test
     void canNotAddEpicToHimselfTest() {
-        final int epicId = taskManager.addEpic(epic1).getId();
-        epic1.addSubTaskId(epicId);
+        taskManager.addEpic(epic1);
+        epic1.addSubTaskId(1);
         assertTrue(epic1.subtaskIds.isEmpty(), "Эпик добавился сам в свои подзадачи");
     }
 
     @Test
     void setIdAndGenerateIdNotConflictTest() {
-        final int taskId = taskManager.addTask(task1).getId();
-        taskManager.updateTask(new Task(task1.getName(), task1.getDescription(), task1.getStatus(), taskId + 1));
-        assertNull(taskManager.getTaskById(taskId + 1), "Задачи с заданным id и сгенерированным id конфликтуют внутри менеджера!");
+        taskManager.addTask(task1);
+        taskManager.updateTask(new Task(task1.getName(), task1.getDescription(), task1.getStatus(), task1.getId() + 1));
+        assertNull(taskManager.getTaskById(1 + 1), "Задачи с заданным id и сгенерированным id конфликтуют внутри менеджера!");
     }
 
     @Test
     void immutabilityTaskTest() {
-        final int taskId = taskManager.addTask(task1).getId();
-        Task taskRef = new Task(task1.getName(), task1.getDescription(), task1.getStatus(), taskId);
+        taskManager.addTask(task1);
+        Task taskRef = new Task(task1.getName(), task1.getDescription(), task1.getStatus(), task1.getId());
         assertEquals(task1, taskRef, "Задача поменялась при добавлении в taskManager");
     }
 

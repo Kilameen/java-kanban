@@ -23,11 +23,11 @@ public interface TaskManager {
 
     List<SubTask> getSubtasksByEpicId(int id);
 
-    Task addTask(Task task);
+    void addTask(Task task);
 
-    Epic addEpic(Epic epic);
+    void addEpic(Epic epic);
 
-    SubTask addSubtask(SubTask subtask);
+    void addSubtask(SubTask subtask);
 
     void updateTask(Task task);
 
@@ -46,4 +46,6 @@ public interface TaskManager {
     void deleteEpic(int id);
 
     void deleteSubtask(int id);
+
+    void deleteAll();
 }
