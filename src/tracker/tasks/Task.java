@@ -34,12 +34,12 @@ public class Task {
         this.status = status;
     }
 
-    public Task(int id, String name, Status status, String description, LocalDateTime startTime,Duration durationMinutes) {
+    public Task(int id, String name, Status status, String description, LocalDateTime startTime,Long durationMinutes) {
         this.name = name;
         this.status = status;
         this.description = description;
         this.startTime = startTime;
-        this.duration = durationMinutes;
+        this.duration = Duration.ofMinutes(durationMinutes);
     }
 
     public LocalDateTime getStartTime() {

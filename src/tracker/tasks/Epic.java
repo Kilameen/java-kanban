@@ -1,6 +1,5 @@
 package tracker.tasks;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,12 +12,7 @@ public class Epic extends Task {
         super(name, description, Status.NEW);
     }
 
-    public Epic(int id, String name, Status status, String description) {
-        super(name, description, status);
-        setId(id);
-    }
-
-    public Epic(int id, String name, Status status, String description, LocalDateTime startTime, Duration durationMinutes) {
+    public Epic(int id, String name, Status status, String description, LocalDateTime startTime, Long durationMinutes) {
         super(id, name, status, description, startTime, durationMinutes);
     }
 
@@ -37,7 +31,7 @@ public class Epic extends Task {
     }
 
     public LocalDateTime getEndTime() {
-        return endTime;
+        return startTime.plus(duration);
     }
 
     public void setEndTime(LocalDateTime endTime) {

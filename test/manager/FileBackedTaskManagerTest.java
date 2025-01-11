@@ -1,4 +1,4 @@
-package managerTest;
+package manager;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,41 +40,44 @@ class FileBackedTaskManagerTest {
 
     @Test
     void testAddTask() {
-        Task task = new Task(1,"Task_1",Status.NEW, "Task_desc_1",LocalDateTime.now(),Duration.ofMinutes(15));
+        Task task = new Task(1,"Task_1",Status.NEW, "Task_desc_1",LocalDateTime.now(),15L);
         taskManager.addTask(task);
         assertEquals(1, taskManager.getTasks().size());
     }
 
     @Test
     void SaveAndLoadTaskTest() throws IOException {
-        Task task = new Task(1,"Task_1",Status.NEW, "Task_desc_1",LocalDateTime.now(),Duration.ofMinutes(15));
+        Task task = new Task(1,"Task_1",Status.NEW, "Task_desc_1",LocalDateTime.now(),15L);
         taskManager.addTask(task);
 
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(testFile);
+        Task loadedTask = loadedManager.getTaskById(1);
+        assertEquals(task, loadedTask);
         assertEquals(1, loadedManager.getTasks().size());
-        assertEquals(task, loadedManager.getTasks().getFirst());
     }
 
     @Test
     void testSaveAndLoadEpic() {
-        Epic epic = new Epic(1,"Epic_1", Status.NEW ,"Epic_desc_1", LocalDateTime.now(), Duration.ofMinutes(15));
+        Epic epic = new Epic(1,"Epic_1", Status.NEW ,"Epic_desc_1", LocalDateTime.now(), 15L);
         taskManager.addEpic(epic);
 
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(testFile);
+        Epic loadedEpic = loadedManager.getEpicById(1);
+        assertEquals(epic, loadedEpic);
         assertEquals(1, loadedManager.getEpics().size());
-        assertEquals(epic, loadedManager.getEpics().getFirst());
     }
 
     @Test
     void testSaveAndLoadSubtask() {
-        Epic epic = new Epic(1,"Epic_1", Status.NEW ,"Epic_desc_1", LocalDateTime.of(2020, 1, 1, 1, 1), Duration.ofMinutes(15));
+        Epic epic = new Epic(1,"Epic_1", Status.NEW ,"Epic_desc_1", LocalDateTime.of(2020, 1, 1, 1, 1), 15L);
         taskManager.addEpic(epic);
-        SubTask subtask = new SubTask(2,"Subtask_1_1", Status.IN_PROGRESS,"Subtask_desc_1_1", epic.getEndTime().plusHours(1), Duration.ofMinutes(15), epic.getId());
+        SubTask subtask = new SubTask(2,"Subtask_1_1", Status.NEW,"Subtask_desc_1_1", epic.getEndTime().plusHours(1), 15L, epic.getId());
         taskManager.addSubtask(subtask);
 
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(testFile);
+        SubTask loadedSubTask = loadedManager.getSubtaskById(2);
+        assertEquals(subtask, loadedSubTask);
         assertEquals(1, loadedManager.getSubtasks().size());
-        assertEquals(subtask, loadedManager.getSubtasks().getFirst());
     }
 
     @Test
