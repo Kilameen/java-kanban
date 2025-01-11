@@ -3,14 +3,18 @@ package tracker.manager;
 import tracker.exception.ManagerLoadException;
 import tracker.exception.ManagerSaveException;
 import tracker.tasks.*;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private final File file;
-    private static final String FILE_TITLE = String.join(",", "id", "type", "name", "status", "description", "epic");
-
+    private static final String FILE_TITLE = String.join(",", "id", "type", "name", "status", "description", "startTime", "durationMinutes", "epic");
+    private final DateTimeFormatter dateTimeFormatter = Task.dateTimeFormatter;
     public FileBackedTaskManager(File file) {
         this.file = file;
     }
@@ -73,6 +77,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         builder.append(task.getName()).append(",");
         builder.append(task.getStatus()).append(",");
         builder.append(task.getDescription()).append(",");
+        builder.append(task.getStartTime()).append(",");
+        builder.append(task.getDuration()).append(",");
         if (task instanceof SubTask) {
             builder.append(((SubTask) task).getEpicID()).append(",");
         } else {
@@ -88,17 +94,20 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         String name = parameters[2];
         Status status = Status.valueOf(parameters[3]);
         String description = parameters[4];
+        LocalDateTime startTime = LocalDateTime.parse(parameters[5],dateTimeFormatter);
+        Duration durationMinutes = Duration.parse(parameters[6]);
+
         Task task;
         try {
             switch (type) {
                 case TASK:
-                    task = new Task(id, name, description, status);
+                    task = new Task(id, name, status, description, startTime, durationMinutes);
                     break;
                 case EPIC:
-                    task = new Epic(id, name, description, status);
+                    task = new Epic(id, name, status, description, startTime, durationMinutes);
                     break;
                 case SUBTASK:
-                    task = new SubTask(id, name, description, status, Integer.parseInt(parameters[5]));
+                    task = new SubTask(id, name, status, description, startTime, durationMinutes, Integer.parseInt(parameters[7]));
                     break;
                 default:
                     throw new ManagerSaveException("Неизвестный тип задачи: " + type);

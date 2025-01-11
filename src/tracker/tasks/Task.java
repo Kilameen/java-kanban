@@ -1,5 +1,8 @@
 package tracker.tasks;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Task {
@@ -7,6 +10,9 @@ public class Task {
     protected String description;
     protected int id;
     protected Status status;
+    protected Duration duration;// продолжительность задачи в минутах
+    protected LocalDateTime startTime; // дата и время старта выполнения задачи
+    public static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public Task(String name, String description,Status status, int id) {
         this.name = name;
@@ -26,6 +32,39 @@ public class Task {
         this.name = name;
         this.description = description;
         this.status = status;
+    }
+
+    public Task(int id, String name, Status status, String description, LocalDateTime startTime,Duration durationMinutes) {
+        this.name = name;
+        this.status = status;
+        this.description = description;
+        this.startTime = startTime;
+        this.duration = durationMinutes;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public Task setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+        return this;
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public LocalDateTime getEndTime() {
+        if (getStartTime() == null) {
+            return null;
+        }
+        return startTime.plus(duration);
+    }
+
+    public Task setDuration(Duration duration) {
+        this.duration = duration;
+        return this;
     }
 
     public Type getType() {
@@ -83,11 +122,18 @@ public class Task {
 
     @Override
     public String toString() {
+        String start = "";
+        if (getStartTime() != null) {
+            start = getStartTime().format(dateTimeFormatter);
+        }
+
         return "model.Task.Task{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", id=" + id +
                 ", status=" + status +
+                ", startTime=" + start +
+                ", duration=" + duration.toMinutes() +
                 '}';
     }
 }

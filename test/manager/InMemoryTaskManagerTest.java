@@ -1,15 +1,20 @@
-package manager;
+package managerTest;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import tracker.exception.TaskOverlapException;
 import tracker.manager.Managers;
 import tracker.manager.TaskManager;
 import tracker.tasks.Epic;
 import tracker.tasks.Status;
 import tracker.tasks.SubTask;
 import tracker.tasks.Task;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class InMemoryTaskManagerTest {
@@ -22,17 +27,15 @@ public class InMemoryTaskManagerTest {
     protected String SUBTASK_NAME_TEXT = "Test addSubtask";
     protected String SUBTASK_DESCRIPTION_TEXT = "Test addSubtask description";
 
-    Task task1 = new Task(TASK_NAME_TEXT, TASK_DESCRIPTION_TEXT, Status.NEW);
-    Task task2 = new Task(TASK_NAME_TEXT, TASK_DESCRIPTION_TEXT, Status.NEW);
-    Task task3 = new Task(TASK_NAME_TEXT, TASK_DESCRIPTION_TEXT, Status.NEW);
+    Task task1 = new Task(1,TASK_NAME_TEXT,Status.NEW, TASK_DESCRIPTION_TEXT, LocalDateTime.now(), Duration.ofMinutes(15));
+    Task task2 = new Task(2,TASK_NAME_TEXT,Status.IN_PROGRESS, TASK_DESCRIPTION_TEXT, task1.getEndTime().plusHours(2), Duration.ofMinutes(15));
 
-    Epic epic1 = new Epic(EPIC_NAME_TEXT, EPIC_DESCRIPTION_TEXT);
-    Epic epic2 = new Epic(EPIC_NAME_TEXT, EPIC_DESCRIPTION_TEXT);
-    Epic epic3 = new Epic(EPIC_NAME_TEXT, EPIC_DESCRIPTION_TEXT);
+    Epic epic1 = new Epic(3,EPIC_NAME_TEXT, Status.NEW, EPIC_DESCRIPTION_TEXT,task2.getEndTime().plusHours(1),Duration.ofMinutes(15));
+    Epic epic2 = new Epic(4,EPIC_NAME_TEXT,Status.DONE, EPIC_DESCRIPTION_TEXT,task2.getEndTime().plusHours(1),Duration.ofMinutes(15));
 
-    SubTask subTask1 = new SubTask(SUBTASK_NAME_TEXT, SUBTASK_DESCRIPTION_TEXT, Status.NEW, epic1.getId());
-    SubTask subTask2 = new SubTask(SUBTASK_NAME_TEXT, SUBTASK_DESCRIPTION_TEXT, Status.NEW, epic1.getId());
-    SubTask subTask3 = new SubTask(SUBTASK_NAME_TEXT, SUBTASK_DESCRIPTION_TEXT, Status.NEW, epic1.getId());
+    SubTask subTask1 = new SubTask(5,SUBTASK_NAME_TEXT,Status.NEW, SUBTASK_DESCRIPTION_TEXT, task2.getEndTime().plusHours(1), Duration.ofMinutes(15), epic1.getId());
+    SubTask subTask2 = new SubTask(6,SUBTASK_NAME_TEXT,Status.IN_PROGRESS, SUBTASK_DESCRIPTION_TEXT,subTask1.getEndTime().plusHours(1), Duration.ofMinutes(15), epic1.getId());
+    SubTask subTask3 = new SubTask(7,SUBTASK_NAME_TEXT, Status.DONE, SUBTASK_DESCRIPTION_TEXT, subTask2.getEndTime().plusHours(1), Duration.ofMinutes(15), epic1.getId());
 
     @BeforeEach
     void beforeEach() {
@@ -144,7 +147,7 @@ public class InMemoryTaskManagerTest {
     @Test
     void deleteEpicByIdTest() {
         taskManager.addEpic(epic1);
-        taskManager.deleteEpic(1);
+        taskManager.deleteEpic(epic1.getId());
         assertEquals(0, taskManager.getEpics().size());
     }
 
@@ -212,18 +215,18 @@ public class InMemoryTaskManagerTest {
     @Test
     void checkingTaskIfIdAreEqual() {
         taskManager.addTask(task1);
-        task1.setId(1);
         taskManager.addTask(task2);
         task2.setId(1);
+        task2.setStatus(Status.NEW);
         assertEquals(task1, task2);
     }
 
     @Test
     void checkingEpicIfIdAreEqual() {
         taskManager.addEpic(epic1);
-        epic1.setId(1);
         taskManager.addEpic(epic2);
         epic2.setId(1);
+        epic2.setStatus(Status.NEW);
         assertEquals(epic1, epic2);
     }
 
@@ -270,17 +273,61 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    void addEpicWithTreeSubtaskTest(){
+    void addEpicWithTreeSubtaskTest() {
         taskManager.addEpic(epic1);
         taskManager.addSubtask(subTask1);
         taskManager.addSubtask(subTask2);
         taskManager.addSubtask(subTask3);
-        assertEquals(3, taskManager.getSubtasks().size(),"Неверное колличество подзадач!");
+        assertEquals(3, taskManager.getSubtasks().size(), "Неверное колличество подзадач!");
     }
 
     @Test
-    void addEpicIsEmpty(){
+    void addEpicIsEmpty() {
         taskManager.addEpic(epic2);
-        assertEquals(0, taskManager.getSubtasks().size(),"Эпик не пустой!");
+        assertEquals(0, taskManager.getSubtasks().size(), "Эпик не пустой!");
     }
+
+    @Test
+    public void getPrioritizedTasksTest() {
+        Task task1 = new Task(1,"Task_1",Status.NEW, "Task_desc_1",LocalDateTime.now(),Duration.ofMinutes(15));
+        Task task2 = new Task(2,"Task_2", Status.IN_PROGRESS, "Task_desc_2", task1.getEndTime().plusHours(2), Duration.ofMinutes(15));
+        taskManager.addTask(task1);
+        taskManager.addTask(task2);
+
+        Set<Task> prioritizedTasks = taskManager.getPrioritizedTasks();
+        assertEquals(2, prioritizedTasks.size(), "Должно быть 2 задачи");
+        assertTrue(prioritizedTasks.contains(task1), "Список должен содержать task1");
+        assertTrue(prioritizedTasks.contains(task2), "Список должен содержать task2");
+    }
+    @Test
+    public void OverlappingTaskTest() {
+        Task task1 = new Task(1,"Task_1",Status.NEW, "Task_desc_1",LocalDateTime.now(),Duration.ofMinutes(15));
+        taskManager.addTask(task1);
+        Task task2 = new Task(2,"Task_1",Status.NEW, "Task_desc_1",LocalDateTime.now(),Duration.ofMinutes(15));
+
+        Exception exception = assertThrows(TaskOverlapException.class, () -> {
+            taskManager.addTask(task2);
+        },"Задачи пересекаются");
+    }
+
+@Test
+public void epicStatusTest() {
+    assertEquals(Status.NEW, taskManager.getEpicById(epic1.getId()).getStatus());
+    subTask1.setStatus(Status.DONE);
+    taskManager.updateSubtask(subTask1);
+    taskManager.updateEpic(epic1);
+    assertEquals(Status.IN_PROGRESS, taskManager.getEpicById(epic1.getId()).getStatus());
+    subTask2.setStatus(Status.DONE);
+    taskManager.updateSubtask(subTask2);
+    taskManager.updateEpic(epic1);
+    assertEquals(Status.DONE, taskManager.getEpicById(epic1.getId()).getStatus());
+}
+
+@Test
+public void epicStatusSubtaskStatusIN_PROGRESSTest() {
+    subTask1.setStatus(Status.IN_PROGRESS);
+    taskManager.updateSubtask(subTask1);
+    taskManager.updateEpic(epic1);
+    assertEquals(Status.IN_PROGRESS, taskManager.getEpicById(epic1.getId()).getStatus());
+}
 }

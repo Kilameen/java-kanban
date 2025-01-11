@@ -1,4 +1,4 @@
-package manager;
+package managerTest;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +12,8 @@ import tracker.tasks.Task;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -38,14 +40,14 @@ class FileBackedTaskManagerTest {
 
     @Test
     void testAddTask() {
-        Task task = new Task("Test addTask", "Test addTask description", Status.NEW);
+        Task task = new Task(1,"Task_1",Status.NEW, "Task_desc_1",LocalDateTime.now(),Duration.ofMinutes(15));
         taskManager.addTask(task);
         assertEquals(1, taskManager.getTasks().size());
     }
 
     @Test
     void SaveAndLoadTaskTest() throws IOException {
-        Task task = new Task("Test addTask", "Test addTask description", Status.NEW);
+        Task task = new Task(1,"Task_1",Status.NEW, "Task_desc_1",LocalDateTime.now(),Duration.ofMinutes(15));
         taskManager.addTask(task);
 
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(testFile);
@@ -55,7 +57,7 @@ class FileBackedTaskManagerTest {
 
     @Test
     void testSaveAndLoadEpic() {
-        Epic epic = new Epic(1, "Test addEpic", "Test addEpic description", Status.NEW);
+        Epic epic = new Epic(1,"Epic_1", Status.NEW ,"Epic_desc_1", LocalDateTime.now(), Duration.ofMinutes(15));
         taskManager.addEpic(epic);
 
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(testFile);
@@ -65,9 +67,9 @@ class FileBackedTaskManagerTest {
 
     @Test
     void testSaveAndLoadSubtask() {
-        Epic epic = new Epic(1, "Test addEpic", "Test addEpic description", Status.NEW);
+        Epic epic = new Epic(1,"Epic_1", Status.NEW ,"Epic_desc_1", LocalDateTime.of(2020, 1, 1, 1, 1), Duration.ofMinutes(15));
         taskManager.addEpic(epic);
-        SubTask subtask = new SubTask(2, "Test addSubtask", "Test addSubtask description", Status.NEW, epic.getId());
+        SubTask subtask = new SubTask(2,"Subtask_1_1", Status.IN_PROGRESS,"Subtask_desc_1_1", epic.getEndTime().plusHours(1), Duration.ofMinutes(15), epic.getId());
         taskManager.addSubtask(subtask);
 
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(testFile);
