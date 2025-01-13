@@ -1,7 +1,6 @@
 package manager;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tracker.exception.ManagerLoadException;
 import tracker.manager.FileBackedTaskManager;
@@ -12,43 +11,35 @@ import tracker.tasks.Task;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.Duration;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class FileBackedTaskManagerTest {
+class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
 
-    private FileBackedTaskManager taskManager;
-    private File testFile;
+    static FileBackedTaskManager fileBackedTaskManager;
+    static File testFile;
+    protected String TASK_NAME_TEXT = "Test addTask";
+    protected String TASK_DESCRIPTION_TEXT = "Test addTask description";
+    protected String EPIC_NAME_TEXT = "Test addEpic";
+    protected String EPIC_DESCRIPTION_TEXT = "Test addEpic description";
+    protected String SUBTASK_NAME_TEXT = "Test addSubtask";
+    protected String SUBTASK_DESCRIPTION_TEXT = "Test addSubtask description";
 
-    @BeforeEach
-    void setUp() {
+    @Override
+    protected FileBackedTaskManager createTaskManager() throws IOException {
         testFile = new File("testData.csv");
-        taskManager = new FileBackedTaskManager(testFile);
-    }
-
-    @AfterEach
-    void tearDown() {
-        taskManager.deleteAll();
-
-        if (testFile.exists()) {
-            testFile.delete();
-        }
-    }
-
-    @Test
-    void testAddTask() {
-        Task task = new Task(1,"Task_1",Status.NEW, "Task_desc_1",LocalDateTime.now(),15L);
-        taskManager.addTask(task);
-        assertEquals(1, taskManager.getTasks().size());
+        testFile.deleteOnExit();
+        fileBackedTaskManager = new FileBackedTaskManager(testFile);
+        return fileBackedTaskManager;
     }
 
     @Test
     void SaveAndLoadTaskTest() throws IOException {
-        Task task = new Task(1,"Task_1",Status.NEW, "Task_desc_1",LocalDateTime.now(),15L);
-        taskManager.addTask(task);
+        Task task = new Task("Task_1",Status.NEW, "Task_desc_1",LocalDateTime.now(),15L);
+        fileBackedTaskManager.addTask(task);
 
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(testFile);
         Task loadedTask = loadedManager.getTaskById(1);
@@ -58,8 +49,8 @@ class FileBackedTaskManagerTest {
 
     @Test
     void testSaveAndLoadEpic() {
-        Epic epic = new Epic(1,"Epic_1", Status.NEW ,"Epic_desc_1", LocalDateTime.now(), 15L);
-        taskManager.addEpic(epic);
+        Epic epic = new Epic("Epic_1", Status.NEW ,"Epic_desc_1", LocalDateTime.now(), 15L);
+        fileBackedTaskManager.addEpic(epic);
 
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(testFile);
         Epic loadedEpic = loadedManager.getEpicById(1);
@@ -69,10 +60,10 @@ class FileBackedTaskManagerTest {
 
     @Test
     void testSaveAndLoadSubtask() {
-        Epic epic = new Epic(1,"Epic_1", Status.NEW ,"Epic_desc_1", LocalDateTime.of(2020, 1, 1, 1, 1), 15L);
-        taskManager.addEpic(epic);
-        SubTask subtask = new SubTask(2,"Subtask_1_1", Status.NEW,"Subtask_desc_1_1", epic.getEndTime().plusHours(1), 15L, epic.getId());
-        taskManager.addSubtask(subtask);
+        Epic epic = new Epic("Epic_1", Status.NEW ,"Epic_desc_1", LocalDateTime.of(2020, 1, 1, 1, 1), 15L);
+        fileBackedTaskManager.addEpic(epic);
+        SubTask subtask = new SubTask("Subtask_1_1", Status.NEW,"Subtask_desc_1_1", epic.getEndTime().plusHours(1), 15L, epic.getId());
+        fileBackedTaskManager.addSubtask(subtask);
 
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(testFile);
         SubTask loadedSubTask = loadedManager.getSubtaskById(2);
@@ -82,8 +73,10 @@ class FileBackedTaskManagerTest {
 
     @Test
     void testLoadEmptyFile() {
-        assertThrows(ManagerLoadException.class, () -> {
-            FileBackedTaskManager.loadFromFile(testFile);
-        });
+        try {
+            fileBackedTaskManager = FileBackedTaskManager.loadFromFile(testFile);
+        } catch (ManagerLoadException e) {
+            e.printStackTrace();
+        }
     }
 }

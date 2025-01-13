@@ -100,13 +100,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         try {
             switch (type) {
                 case TASK:
-                    task = new Task(id, name, status, description, startTime, duration);
+                    task = new Task(name, status, description, startTime, duration);
                     break;
                 case EPIC:
-                    task = new Epic(id, name, status, description, startTime, duration);
+                    task = new Epic(name, status, description, startTime, duration);
                     break;
                 case SUBTASK:
-                    task = new SubTask(id, name, status, description, startTime, duration, Integer.parseInt(parameters[7]));
+                    task = new SubTask(name, status, description, startTime, duration, Integer.parseInt(parameters[7]));
                     break;
                 default:
                     throw new ManagerSaveException("Неизвестный тип задачи: " + type);
