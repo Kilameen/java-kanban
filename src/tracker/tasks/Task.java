@@ -14,7 +14,7 @@ public class Task {
     protected LocalDateTime startTime; // дата и время старта выполнения задачи
     public static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public Task(String name, String description,Status status, int id) {
+    public Task(String name, String description, Status status, int id) {
         this.name = name;
         this.description = description;
         this.id = id;
@@ -34,7 +34,7 @@ public class Task {
         this.status = status;
     }
 
-    public Task( String name, Status status, String description, LocalDateTime startTime,Long durationMinutes) {
+    public Task(String name, Status status, String description, LocalDateTime startTime, Long durationMinutes) {
         this.name = name;
         this.status = status;
         this.description = description;

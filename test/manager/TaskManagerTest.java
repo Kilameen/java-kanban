@@ -1,7 +1,6 @@
 package manager;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tracker.exception.TaskOverlapException;
@@ -11,7 +10,6 @@ import tracker.tasks.Status;
 import tracker.tasks.SubTask;
 import tracker.tasks.Task;
 import java.io.IOException;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -248,7 +246,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void checkingSubtaskIfIdAreEqual() {
-        Epic epic1 = new Epic( EPIC_NAME_TEXT, Status.NEW, EPIC_DESCRIPTION_TEXT, LocalDateTime.now(), 15L);
+        Epic epic1 = new Epic(EPIC_NAME_TEXT, Status.NEW, EPIC_DESCRIPTION_TEXT, LocalDateTime.now(), 15L);
         taskManager.addEpic(epic1);
         epic1.setId(1);
         SubTask subtask1 = new SubTask(SUBTASK_NAME_TEXT, Status.NEW, SUBTASK_DESCRIPTION_TEXT, epic1.getEndTime().plusHours(1), 15L, epic1.getId());
@@ -321,7 +319,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void shouldSetEpicNewIfAllSubtasksNew() {
+    public void epicStatusSubtaskStatusNEW_Test() {
 
         SubTask subTask1 = new SubTask(SUBTASK_NAME_TEXT, Status.NEW, SUBTASK_DESCRIPTION_TEXT, task2.getEndTime().plusHours(1), 15L, 1);
         SubTask subTask2 = new SubTask(SUBTASK_NAME_TEXT, Status.NEW, SUBTASK_DESCRIPTION_TEXT, subTask1.getEndTime().plusHours(1), 15L, 1);
@@ -339,7 +337,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void shouldSetEpicDoneIfAllSubtasksDone() {
+    public void epicStatusSubtaskStatusDONE_Test() {
 
         SubTask subTask1 = new SubTask(SUBTASK_NAME_TEXT, Status.NEW, SUBTASK_DESCRIPTION_TEXT, task2.getEndTime().plusHours(1), 15L, 1);
         SubTask subTask2 = new SubTask(SUBTASK_NAME_TEXT, Status.NEW, SUBTASK_DESCRIPTION_TEXT, subTask1.getEndTime().plusHours(1), 15L, 1);
@@ -368,7 +366,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void shouldSetEpicInProgressIfAllSubtasksNewAndDone() {
+    public void epicStatusSubtaskStatusNEWandDONE_Test() {
 
         SubTask subTask1 = new SubTask(SUBTASK_NAME_TEXT, Status.NEW, SUBTASK_DESCRIPTION_TEXT, task2.getEndTime().plusHours(1), 15L, 1);
         SubTask subTask2 = new SubTask(SUBTASK_NAME_TEXT, Status.NEW, SUBTASK_DESCRIPTION_TEXT, subTask1.getEndTime().plusHours(1), 15L, 1);
