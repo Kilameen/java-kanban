@@ -4,6 +4,7 @@ import tracker.tasks.Epic;
 import tracker.tasks.SubTask;
 import tracker.tasks.Task;
 import java.util.List;
+import java.util.Set;
 
 public interface TaskManager {
 
@@ -48,4 +49,7 @@ public interface TaskManager {
     void deleteSubtask(int id);
 
     void deleteAll();
+
+    Set<Task> getPrioritizedTasks();
+
 }

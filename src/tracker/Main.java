@@ -6,6 +6,7 @@ import tracker.tasks.Epic;
 import tracker.tasks.Status;
 import tracker.tasks.SubTask;
 import tracker.tasks.Task;
+import java.time.LocalDateTime;
 
 public class Main {
 
@@ -15,8 +16,8 @@ public class Main {
 
         //Создаем 2 задачи
 
-        Task task1 = new Task("Task_1", "Task_desc_1", Status.NEW);
-        Task task2 = new Task("Task_2", "Task_desc_2", Status.IN_PROGRESS);
+        Task task1 = new Task("Task_1", Status.NEW, "Task_desc_1", LocalDateTime.now(), 15L);
+        Task task2 = new Task("Task_2", Status.IN_PROGRESS, "Task_desc_2", task1.getEndTime().plusHours(2), 15L);
 
         taskManager.addTask(task1);
         taskManager.addTask(task2);
@@ -26,8 +27,8 @@ public class Main {
 
         //Создаем 2 эпика, один эпик с 3 подзадачами, один пустой
 
-        Epic epic1 = new Epic("Epic_1", "Epic_desc_1");
-        Epic epic2 = new Epic("Epic_2", "Epic_desc_2");
+        Epic epic1 = new Epic("Epic_1", Status.NEW, "Epic_desc_1", task2.getEndTime().plusHours(1), 15L);
+        Epic epic2 = new Epic("Epic_2", Status.DONE, "Epic_desc_2", task2.getEndTime().plusMinutes(45), 15L);
 
         taskManager.addEpic(epic1);
         taskManager.addEpic(epic2);
@@ -35,9 +36,9 @@ public class Main {
         taskManager.getEpicById(epic1.getId());
         taskManager.getEpicById(epic2.getId());
 
-        SubTask subtask1 = new SubTask("Subtask_1_1", "Subtask_desc_1_1", Status.NEW, epic1.getId());
-        SubTask subtask2 = new SubTask("Subtask_1_2", "Subtask_desc_1_2", Status.IN_PROGRESS, epic1.getId());
-        SubTask subtask3 = new SubTask("Subtask_2_1", "Subtask_desc_2_1", Status.DONE, epic1.getId());
+        SubTask subtask1 = new SubTask("Subtask_1_1", Status.NEW, "Subtask_desc_1_1", task2.getEndTime().plusHours(1), 15L, epic1.getId());
+        SubTask subtask2 = new SubTask("Subtask_1_2", Status.IN_PROGRESS, "Subtask_desc_1_2", subtask1.getEndTime().plusHours(1), 15L, epic1.getId());
+        SubTask subtask3 = new SubTask("Subtask_1_3", Status.DONE, "Subtask_desc_1_3", subtask2.getEndTime().plusHours(2), 15L, epic1.getId());
 
         taskManager.addSubtask(subtask1);
         taskManager.addSubtask(subtask2);
@@ -47,6 +48,8 @@ public class Main {
         taskManager.getSubtaskById(subtask2.getId());
         taskManager.getSubtaskById(subtask3.getId());
 
+        System.out.println("Показать приоритетные задачи : ");
+        System.out.println(taskManager.getPrioritizedTasks());
         //Запрашиваем созданные задачи несколько раз в разном порядке.
 
         System.out.println("\n Запрос созданной задачи : \n" + "\n" + taskManager.getTaskById(1));
