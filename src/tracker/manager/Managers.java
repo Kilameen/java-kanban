@@ -1,6 +1,7 @@
 package tracker.manager;
 
 public class Managers {
+
     private Managers(){
 
     }
