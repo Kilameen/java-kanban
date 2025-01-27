@@ -6,7 +6,6 @@ import com.sun.net.httpserver.HttpExchange;
 import tracker.server.adapter.DurationAdapter;
 import tracker.server.adapter.LocalDateTimeAdapter;
 import tracker.manager.TaskManager;
-
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;

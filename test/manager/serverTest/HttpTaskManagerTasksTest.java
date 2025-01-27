@@ -64,16 +64,12 @@ public class HttpTaskManagerTasksTest {
     @Test
     public void addTasksToTaskServer() throws IOException, InterruptedException {
         URI url = URI.create(TASK_URL);
-
         assertEquals(201, postTask(url, task, client).statusCode(), "Задача добавлена");
 
         url = URI.create(EPIC_URL);
-
         assertEquals(201, postTask(url, epic, client).statusCode(), "Задача добавлена");
 
-
         url = URI.create(SUBTASK_URL);
-
         assertEquals(201, postTask(url, subtask, client).statusCode(), "Задача добавлена");
     }
 
