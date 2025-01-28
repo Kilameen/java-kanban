@@ -33,12 +33,12 @@ public class HistoryHandler extends BaseHttpHandler {
         if (method.equals("GET")) {
             getHistoryList(exchange);
         } else {
-            sendText(exchange, "Такой операции не существует", 404);
+            sendText(exchange, "Такой операции не существует", 405);
         }
     }
 
     private void getHistoryList(HttpExchange exchange) throws IOException {
-        response = gson.toJson(taskManager.getHistory());
-        sendText(exchange, response, 200);
+            response = gson.toJson(taskManager.getHistory());
+            sendText(exchange, response, 200);
+        }
     }
-}

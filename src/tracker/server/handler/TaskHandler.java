@@ -97,11 +97,13 @@ public class TaskHandler extends BaseHttpHandler {
 
     private void executeDELETERequest(HttpExchange exchange) throws IOException {
         String query = exchange.getRequestURI().getQuery();
-
-        if (query != null) {
-            sendText(exchange, "Не указан id задачи ", 404);
+        if (query == null) {
+            // Удалить все задачи, если параметр не указан
+            taskManager.deleteAllTasks(); // Метод для удаления всех задач
+            sendText(exchange, "Все задачи удалены!", 200);
             return;
         }
+
         if (getTaskId(exchange).isEmpty()) {
             sendText(exchange, "Не указан id задачи ", 404);
             return;
