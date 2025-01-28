@@ -26,6 +26,8 @@ public class PrioritizedTasksHandler extends BaseHttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         String method = exchange.getRequestMethod();
+        String path = String.valueOf(exchange.getRequestURI());
+        System.out.println("Обрабатывается запрос " + path + " с методом " + method);
 
         if (method.equals("GET")) {
             getPrioritizedTasks(exchange);

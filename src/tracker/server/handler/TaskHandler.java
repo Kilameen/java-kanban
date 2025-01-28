@@ -82,11 +82,11 @@ public class TaskHandler extends BaseHttpHandler {
             Task taskById = taskManager.getTaskById(task.getId());
             if (taskById == null) {
                 taskManager.addTask(task);
-                sendText(exchange, "Задача добавлена!", 201);
+                sendText(exchange, "Задача добавлена!", 200);
                 return;
             }
             taskManager.updateTask(task);
-            sendText(exchange, "Задача обновлена", 200);
+            sendText(exchange, "Задача обновлена", 201);
 
         } catch (JsonSyntaxException e) {
             sendText(exchange, "Получен некорректный JSON", 400);
@@ -98,7 +98,7 @@ public class TaskHandler extends BaseHttpHandler {
     private void executeDELETERequest(HttpExchange exchange) throws IOException {
         String query = exchange.getRequestURI().getQuery();
 
-        if (query == null) {
+        if (query != null) {
             sendText(exchange, "Не указан id задачи ", 404);
             return;
         }

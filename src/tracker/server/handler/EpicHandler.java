@@ -13,8 +13,12 @@ import java.util.List;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
+import tracker.tasks.Task;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Optional;
+
 import static java.util.Objects.isNull;
 
 public class EpicHandler extends BaseHttpHandler {
@@ -44,7 +48,7 @@ public class EpicHandler extends BaseHttpHandler {
                 executeDELETERequest(exchange);
                 break;
             default:
-                sendText(exchange, "Такой операции не существует", 404);
+                sendText(exchange, "Такой операции не существует", 405);
         }
     }
 
@@ -54,14 +58,7 @@ public class EpicHandler extends BaseHttpHandler {
             sendText(exchange, response, 200);
             return;
         }
-        if (exchange.getRequestURI().toString().contains("subtasks")) {
-            Integer id = getTaskId(exchange).get();
-            Epic epic = taskManager.getEpicById(id);
-            List<SubTask> result = taskManager.getSubtasksByEpicId(epic.getId());
-            response = gson.toJson(result);
-            sendText(exchange, response, 200);
-            return;
-        }
+
         if (getTaskId(exchange).isEmpty()) {
             sendText(exchange, "Некорректный id " + getTaskId(exchange), 400);
             return;
@@ -70,7 +67,7 @@ public class EpicHandler extends BaseHttpHandler {
         int id = getTaskId(exchange).get();
         Epic epicById = taskManager.getEpicById(id);
         if (isNull(epicById)) {
-            sendText(exchange, "Эпиков с id " + id + " не найдено!", 404);
+            sendText(exchange, "Задач с id " + id + " не найдено!", 404);
             return;
         }
         response = gson.toJson(epicById);
@@ -78,26 +75,27 @@ public class EpicHandler extends BaseHttpHandler {
     }
 
     private void executePOSTRequest(HttpExchange exchange) throws IOException {
-
         try {
-            InputStream json = exchange.getRequestBody();
-            String jsonTask = new String(json.readAllBytes(), StandardCharsets.UTF_8);
-            Epic epic = gson.fromJson(jsonTask, Epic.class);
+        InputStream json = exchange.getRequestBody();
+        String jsonEpic = new String(json.readAllBytes(), DEFAULT_CHARSET);
+        Epic epic = gson.fromJson(jsonEpic, Epic.class);
             if (epic == null) {
-                sendText(exchange, "Эпик не должна быть пустой!", 400);
+                sendText(exchange, "Задача не должна быть пустой!", 400);
                 return;
             }
             Epic epicById = taskManager.getEpicById(epic.getId());
             if (epicById == null) {
                 taskManager.addEpic(epic);
-                sendText(exchange, "Эпик добавлен!", 201);
+                sendText(exchange, "Задача добавлена!", 200);
                 return;
             }
             taskManager.updateEpic(epic);
-            sendText(exchange, "Эпик обновлен!", 200);
+            sendText(exchange, "Задача обновлена", 201);
 
         } catch (JsonSyntaxException e) {
             sendText(exchange, "Получен некорректный JSON", 400);
+        } catch (RuntimeException exp) {
+            sendText(exchange, "Обнаружено пересечение по времени!", 406);
         }
     }
 

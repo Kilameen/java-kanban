@@ -67,8 +67,9 @@ public class SubtaskHandler extends BaseHttpHandler {
     private void executePOSTRequest(HttpExchange exchange) throws IOException {
         try {
             InputStream json = exchange.getRequestBody();
-            String jsonTask = new String(json.readAllBytes(), DEFAULT_CHARSET);
-            SubTask subTask = gson.fromJson(jsonTask, SubTask.class);
+            String jsonSubTask = new String(json.readAllBytes(), DEFAULT_CHARSET);
+            SubTask subTask = gson.fromJson(jsonSubTask, SubTask.class);
+
             if (subTask == null) {
                 sendText(exchange, "Подзадача не должна быть пустой!", 400);
                 return;
@@ -76,11 +77,11 @@ public class SubtaskHandler extends BaseHttpHandler {
             SubTask subtaskById = (SubTask) taskManager.getSubtaskById(subTask.getId());
             if (subtaskById == null) {
                 taskManager.addSubtask(subTask);
-                sendText(exchange, "Подзадача добавлена!", 201);
+                sendText(exchange, "Подзадача добавлена!", 200);
                 return;
             }
             taskManager.updateSubtask(subTask);
-            sendText(exchange, "Подзадача обновлена!", 200);
+            sendText(exchange, "Подзадача обновлена!", 201);
 
         } catch (JsonSyntaxException e) {
             sendText(exchange, "Получен некорректный JSON", 400);
