@@ -5,20 +5,13 @@ import tracker.manager.TaskManager;
 import tracker.server.adapter.DurationAdapter;
 import tracker.server.adapter.LocalDateTimeAdapter;
 import tracker.tasks.Epic;
-import tracker.tasks.SubTask;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
-import tracker.tasks.Task;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Optional;
-
 import static java.util.Objects.isNull;
 
 public class EpicHandler extends BaseHttpHandler {
@@ -58,12 +51,10 @@ public class EpicHandler extends BaseHttpHandler {
             sendText(exchange, response, 200);
             return;
         }
-
         if (getTaskId(exchange).isEmpty()) {
             sendText(exchange, "Некорректный id " + getTaskId(exchange), 400);
             return;
         }
-
         int id = getTaskId(exchange).get();
         Epic epicById = taskManager.getEpicById(id);
         if (isNull(epicById)) {
@@ -76,9 +67,9 @@ public class EpicHandler extends BaseHttpHandler {
 
     private void executePOSTRequest(HttpExchange exchange) throws IOException {
         try {
-        InputStream json = exchange.getRequestBody();
-        String jsonEpic = new String(json.readAllBytes(), DEFAULT_CHARSET);
-        Epic epic = gson.fromJson(jsonEpic, Epic.class);
+            InputStream json = exchange.getRequestBody();
+            String jsonEpic = new String(json.readAllBytes(), DEFAULT_CHARSET);
+            Epic epic = gson.fromJson(jsonEpic, Epic.class);
             if (epic == null) {
                 sendText(exchange, "Задача не должна быть пустой!", 400);
                 return;
@@ -102,7 +93,9 @@ public class EpicHandler extends BaseHttpHandler {
     private void executeDELETERequest(HttpExchange exchange) throws IOException {
         String query = exchange.getRequestURI().getQuery();
         if (query == null) {
-            sendText(exchange, "Не указан id эпика!", 404);
+            taskManager.deleteAllEpics();
+            taskManager.deleteAllSubtasks();// Метод для удаления всех задач
+            sendText(exchange, "Все эпики и подзадачи удалены!", 200);
             return;
         }
         if (getTaskId(exchange).isEmpty()) {

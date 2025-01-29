@@ -91,8 +91,10 @@ public class SubtaskHandler extends BaseHttpHandler {
     }
 
     private void executeDELETERequest(HttpExchange exchange) throws IOException {
-        if (exchange.getRequestURI().getQuery() == null) {
-            sendText(exchange, "Не указан id подзадачи!", 404);
+        String query = exchange.getRequestURI().getQuery();
+        if (query == null) {
+            taskManager.deleteAllSubtasks(); // Метод для удаления всех задач
+            sendText(exchange, "Все подзадачи удалены!", 200);
             return;
         }
         if (getTaskId(exchange).isEmpty()) {

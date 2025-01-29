@@ -28,7 +28,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     protected String SUBTASK_NAME_TEXT = "Test addSubtask";
     protected String SUBTASK_DESCRIPTION_TEXT = "Test addSubtask description";
 
-    Task task1 = new Task(TASK_NAME_TEXT, Status.NEW, TASK_DESCRIPTION_TEXT, LocalDateTime.now(), 15L);
+    Task task1 = new Task(1, TASK_NAME_TEXT, Status.NEW, TASK_DESCRIPTION_TEXT, LocalDateTime.now(), 15L);
     Task task2 = new Task(TASK_NAME_TEXT, Status.IN_PROGRESS, TASK_DESCRIPTION_TEXT, task1.getEndTime().plusHours(2), 15L);
 
     Epic epic1 = new Epic(EPIC_NAME_TEXT, Status.NEW, EPIC_DESCRIPTION_TEXT, task2.getEndTime().plusHours(1), 15L);
@@ -167,12 +167,14 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void deleteSubTaskByIdTest() {
-        taskManager.addEpic(epic1);
-        taskManager.addSubtask(subTask1);
-        taskManager.deleteSubtask(2);
+        Epic epic = new Epic(1, EPIC_NAME_TEXT, Status.NEW, EPIC_DESCRIPTION_TEXT, LocalDateTime.now().plusHours(1), 15L);
+        taskManager.addEpic(epic);
+        SubTask subTask = new SubTask(2, SUBTASK_NAME_TEXT, Status.NEW, SUBTASK_DESCRIPTION_TEXT, epic1.getEndTime().plusHours(1), 15L, epic.getId());
+        taskManager.addSubtask(subTask);
+        taskManager.deleteSubtask(subTask.getId());
 
         assertEquals(0, taskManager.getSubtasks().size());
-        assertEquals(0, taskManager.getEpicById(1).getSubtasksByEpic().size());
+        assertEquals(0, taskManager.getEpicById(epic.getId()).getSubtasksByEpic().size());
     }
 
     @Test
@@ -232,6 +234,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.addTask(task2);
         task2.setId(1);
         task2.setStatus(Status.NEW);
+        task2.setStartTime(task1.getStartTime());
         assertEquals(task1, task2);
     }
 
@@ -246,16 +249,16 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void checkingSubtaskIfIdAreEqual() {
-        Epic epic1 = new Epic(EPIC_NAME_TEXT, Status.NEW, EPIC_DESCRIPTION_TEXT, LocalDateTime.now(), 15L);
         taskManager.addEpic(epic1);
         epic1.setId(1);
-        SubTask subtask1 = new SubTask(SUBTASK_NAME_TEXT, Status.NEW, SUBTASK_DESCRIPTION_TEXT, epic1.getEndTime().plusHours(1), 15L, epic1.getId());
-        SubTask subtask2 = new SubTask(SUBTASK_NAME_TEXT, Status.NEW, SUBTASK_DESCRIPTION_TEXT, subTask1.getEndTime().plusHours(1), 15L, epic1.getId());
-        taskManager.addSubtask(subtask1);
-        subtask1.setId(2);
-        taskManager.addSubtask(subtask2);
-        subtask2.setId(2);
-        assertEquals(subtask1, subtask2, "Экземпляры подкласса не равны друг другу");
+        taskManager.addSubtask(subTask1);
+        subTask1.setId(2);
+        subTask1.setStartTime(LocalDateTime.now());
+        taskManager.addSubtask(subTask2);
+        subTask2.setStatus(Status.NEW);
+        subTask2.setId(2);
+        subTask2.setStartTime(subTask1.getStartTime());
+        assertEquals(subTask1, subTask2, "Экземпляры подкласса не равны друг другу");
     }
 
     @Test
@@ -275,7 +278,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     void immutabilityTaskTest() {
         taskManager.addTask(task1);
-        Task taskRef = new Task(task1.getName(), task1.getDescription(), task1.getStatus(), task1.getId());
+        Task taskRef = new Task(task1.getId(), task1.getName(), Status.NEW, task1.getDescription(), task1.getStartTime(), 15L);
         assertEquals(task1, taskRef, "Задача поменялась при добавлении в taskManager");
     }
 

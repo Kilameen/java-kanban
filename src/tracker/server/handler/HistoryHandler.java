@@ -41,4 +41,4 @@ public class HistoryHandler extends BaseHttpHandler {
             response = gson.toJson(taskManager.getHistory());
             sendText(exchange, response, 200);
         }
-    }
+}

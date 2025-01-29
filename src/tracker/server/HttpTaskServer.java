@@ -11,20 +11,20 @@ public class HttpTaskServer {
     private static final int PORT = 8080;
     private final HttpServer httpServer;
 
-    public HttpTaskServer() throws IOException {
+    public HttpTaskServer(TaskManager taskManager) throws IOException {
         httpServer = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
 
-        TaskManager TASK_MANAGER = Managers.getDefault();
-        httpServer.createContext("/tasks", new TaskHandler(TASK_MANAGER));
-        httpServer.createContext("/epics", new EpicHandler(TASK_MANAGER));
-        httpServer.createContext("/subtasks", new SubtaskHandler(TASK_MANAGER));
-        httpServer.createContext("/history", new HistoryHandler(TASK_MANAGER));
-        httpServer.createContext("/prioritized", new PrioritizedTasksHandler(TASK_MANAGER));
+        httpServer.createContext("/tasks", new TaskHandler(taskManager));
+        httpServer.createContext("/epics", new EpicHandler(taskManager));
+        httpServer.createContext("/subtasks", new SubtaskHandler(taskManager));
+        httpServer.createContext("/history", new HistoryHandler(taskManager));
+        httpServer.createContext("/prioritized", new PrioritizedTasksHandler(taskManager));
     }
 
     public static void main(String[] args) {
         try {
-            HttpTaskServer server = new HttpTaskServer();
+            TaskManager manager = Managers.getDefault();
+            HttpTaskServer server = new HttpTaskServer(manager);
             server.start();
         } catch (IOException e) {
             System.err.println("Не удалось запустить сервер");

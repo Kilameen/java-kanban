@@ -54,12 +54,10 @@ public class TaskHandler extends BaseHttpHandler {
             sendText(exchange, response, 200);
             return;
         }
-
         if (getTaskId(exchange).isEmpty()) {
             sendText(exchange, "Некорректный id " + getTaskId(exchange), 400);
             return;
         }
-
         int id = getTaskId(exchange).get();
         Task taskById = taskManager.getTaskById(id);
         if (isNull(taskById)) {

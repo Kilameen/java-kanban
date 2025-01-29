@@ -67,7 +67,6 @@ public class InMemoryTaskManager implements TaskManager {
     public List<SubTask> getSubtasksByEpicId(int id) {
         Epic epic = epics.get(id);
         if (epic == null) return new ArrayList<>();
-
         return epic.getSubtasksByEpic().stream()
                 .map(subtasks::get)
                 .filter(Objects::nonNull)
@@ -238,6 +237,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteTask(int id) {
         Task deleteTaskId = tasks.remove(id);
         prioritizedTasks.remove(deleteTaskId);
+        historyManager.remove(deleteTaskId.getId());
     }
 
     @Override
@@ -246,20 +246,21 @@ public class InMemoryTaskManager implements TaskManager {
         if (removedEpic != null) {
             removedEpic.getSubtasksByEpic().forEach(subtasks::remove);
             prioritizedTasks.remove(removedEpic);
+            historyManager.remove(removedEpic.getId());
         }
     }
 
     @Override
-    public void deleteSubtask(int id) {
-        SubTask removedSubtask = subtasks.remove(id);
-        if (removedSubtask != null) {
-            Epic epic = epics.get(removedSubtask.getEpicID());
-            if (epic != null) {
-                epic.getSubtasksByEpic().remove((Integer) id);
-                updateEpicStatus(epic.getId());
-                prioritizedTasks.remove(removedSubtask);
-            }
+    public void deleteSubtask(int subTaskId) {
+        SubTask subtask = subtasks.remove(subTaskId);
+        if (subtask != null) {
+            Epic epic = epics.get(subtask.getEpicID());
+            epic.getSubtasksByEpic().remove((Integer) subTaskId);
+            updateEpicStatus(epic.getId());
         }
+        prioritizedTasks.remove(subtask);
+        subtasks.remove(subTaskId);
+        historyManager.remove(subTaskId);
     }
 
     private boolean isOverlapping(Task validTask) {

@@ -1,5 +1,6 @@
 package manager;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import tracker.exception.ManagerLoadException;
 import tracker.manager.FileBackedTaskManager;
@@ -28,18 +29,18 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
 
     @Test
     void SaveAndLoadTaskTest() throws IOException {
-        Task task = new Task(1,"Task_1", Status.NEW, "Task_desc_1", LocalDateTime.now(), 15L);
+        Task task = new Task(1, "Task_1", Status.NEW, "Task_desc_1", LocalDateTime.now(), 15L);
         fileBackedTaskManager.addTask(task);
 
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(testFile);
         Task loadedTask = loadedManager.getTaskById(1);
-        assertEquals(task, loadedTask);
+        Assertions.assertEquals(task, loadedTask);
         assertEquals(1, loadedManager.getTasks().size());
     }
 
     @Test
     void testSaveAndLoadEpic() {
-        Epic epic = new Epic(1,"Epic_1", Status.NEW, "Epic_desc_1", LocalDateTime.now(), 15L);
+        Epic epic = new Epic(1, "Epic_1", Status.NEW, "Epic_desc_1", LocalDateTime.now(), 15L);
         fileBackedTaskManager.addEpic(epic);
 
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(testFile);
@@ -50,9 +51,9 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
 
     @Test
     void testSaveAndLoadSubtask() {
-        Epic epic = new Epic(1,"Epic_1", Status.NEW, "Epic_desc_1", LocalDateTime.of(2020, 1, 1, 1, 1), 15L);
+        Epic epic = new Epic(1, "Epic_1", Status.NEW, "Epic_desc_1", LocalDateTime.of(2020, 1, 1, 1, 1), 15L);
         fileBackedTaskManager.addEpic(epic);
-        SubTask subtask = new SubTask(2,"Subtask_1_1", Status.NEW, "Subtask_desc_1_1", epic.getEndTime().plusHours(1), 15L, epic.getId());
+        SubTask subtask = new SubTask(2, "Subtask_1_1", Status.NEW, "Subtask_desc_1_1", epic.getEndTime().plusHours(1), 15L, epic.getId());
         fileBackedTaskManager.addSubtask(subtask);
 
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(testFile);
