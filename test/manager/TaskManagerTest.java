@@ -46,7 +46,9 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @AfterEach
     void afterEach() {
-        taskManager.deleteAll();
+        taskManager.deleteAllTasks();
+        taskManager.deleteAllEpics();
+
     }
 
     //Test add
@@ -222,7 +224,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.addTask(task1);
         taskManager.addTask(task2);
 
-        Set<Task> prioritizedTasks = taskManager.getPrioritizedTasks();
+        List<Task> prioritizedTasks = taskManager.getPrioritizedTasks();
         assertEquals(2, prioritizedTasks.size(), "Должно быть 2 задачи");
         assertTrue(prioritizedTasks.contains(task1), "Список должен содержать task1");
         assertTrue(prioritizedTasks.contains(task2), "Список должен содержать task2");

@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
 import java.time.LocalDateTime;
+
 import static java.util.Objects.isNull;
 
 public class TaskHandler extends BaseHttpHandler {
@@ -101,17 +102,12 @@ public class TaskHandler extends BaseHttpHandler {
             sendText(exchange, "Все задачи удалены!", 200);
             return;
         }
-
         if (getTaskId(exchange).isEmpty()) {
             sendText(exchange, "Не указан id задачи ", 404);
             return;
         }
         int id = getTaskId(exchange).get();
-        if (taskManager.getTaskById(id) == null) {
-            sendText(exchange, "Задач с таким id " + id + " не найдено!", 404);
-            return;
-        }
-        taskManager.deleteTask(id);
-        sendText(exchange, "Задача удалена!", 200);
+            taskManager.deleteTask(id);
+            sendText(exchange, "Задача удалена!", 200);
     }
 }

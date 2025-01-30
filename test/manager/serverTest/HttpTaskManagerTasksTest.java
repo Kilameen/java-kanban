@@ -64,7 +64,8 @@ public class HttpTaskManagerTasksTest {
     }
 
     public void clearTaskManager() {
-        taskManager.deleteAll();
+        taskManager.deleteAllTasks();
+        taskManager.deleteAllEpics();
     }
 
     public HttpResponse<String> postTask(URI url, Task task,
