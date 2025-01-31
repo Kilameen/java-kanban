@@ -11,7 +11,6 @@ import tracker.tasks.Task;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
@@ -39,7 +38,7 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     }
 
     @Test
-    void testSaveAndLoadEpic() {
+    void testSaveAndLoadEpic() throws InterruptedException {
         Epic epic = new Epic(1, "Epic_1", Status.NEW, "Epic_desc_1", LocalDateTime.now(), 15L);
         fileBackedTaskManager.addEpic(epic);
 
@@ -50,7 +49,7 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     }
 
     @Test
-    void testSaveAndLoadSubtask() {
+    void testSaveAndLoadSubtask() throws InterruptedException {
         Epic epic = new Epic(1, "Epic_1", Status.NEW, "Epic_desc_1", LocalDateTime.of(2020, 1, 1, 1, 1), 15L);
         fileBackedTaskManager.addEpic(epic);
         SubTask subtask = new SubTask(2, "Subtask_1_1", Status.NEW, "Subtask_desc_1_1", epic.getEndTime().plusHours(1), 15L, epic.getId());

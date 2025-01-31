@@ -2,7 +2,6 @@ package tracker.manager;
 
 import tracker.exception.TaskOverlapException;
 import tracker.tasks.*;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -99,12 +98,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void addEpic(Epic epic) {
-        if (isOverlapping(epic)) {
+        if (isOverlappingEpic(epic)) {
             throw new TaskOverlapException("Время задач пересекается");
         }
         epic.setId(nextId++);
         epics.put(epic.getId(), epic);
-
     }
 
     @Override
@@ -207,15 +205,15 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllEpics() {
-            for (Integer i : epics.keySet()) {
-                historyManager.remove(i);
-            }
-            for (Integer id : subtasks.keySet()) {
-                historyManager.remove(id);
-            }
-            epics.clear();
-            subtasks.clear();
+        for (Integer i : epics.keySet()) {
+            historyManager.remove(i);
         }
+        for (Integer id : subtasks.keySet()) {
+            historyManager.remove(id);
+        }
+        epics.clear();
+        subtasks.clear();
+    }
 
     @Override
     public void deleteAllSubtasks() {
@@ -244,8 +242,14 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteEpic(int id) {
         Epic removedEpic = epics.remove(id);
         if (removedEpic != null) {
-            removedEpic.getSubtasksByEpic().forEach(subtasks::remove);
             historyManager.remove(id);
+            removedEpic.getSubtasksByEpic().forEach(subtaskId -> {
+                SubTask subtask = subtasks.remove(subtaskId);
+                if (subtask != null) {
+                    prioritizedTasks.remove(subtask);
+                    historyManager.remove(subtaskId);
+                }
+            });
         }
     }
 
@@ -267,7 +271,36 @@ public class InMemoryTaskManager implements TaskManager {
         }
         return prioritizedTasks.stream()
                 .anyMatch(task -> task.getEndTime().isAfter(validTask.getStartTime()) &&
-                        task.getStartTime().isBefore(validTask.getEndTime())
-                );
+                        task.getStartTime().isBefore(validTask.getEndTime()));
+    }
+
+    private boolean isOverlappingEpic(Epic epic) {
+        for (Epic existingEpic : epics.values()) {
+            if (existingEpic.getStartTime() != null &&
+                    epic.getStartTime() != null &&
+                    existingEpic.getEndTime().isAfter(epic.getStartTime()) &&
+                    existingEpic.getStartTime().isBefore(epic.getEndTime())) {
+                return true;
+            }
+        }
+
+        for (Task task : tasks.values()) {
+            if (task.getStartTime() != null &&
+                    epic.getStartTime() != null &&
+                    task.getEndTime().isAfter(epic.getStartTime()) &&
+                    task.getStartTime().isBefore(epic.getEndTime())) {
+                return true;
+            }
+        }
+
+        for (SubTask subtask : subtasks.values()) {
+            if (subtask.getStartTime() != null &&
+                    epic.getStartTime() != null &&
+                    subtask.getEndTime().isAfter(epic.getStartTime()) &&
+                    subtask.getStartTime().isBefore(epic.getEndTime())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

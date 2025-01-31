@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
 import java.time.LocalDateTime;
-
 import static java.util.Objects.isNull;
 
 public class TaskHandler extends BaseHttpHandler {
@@ -32,8 +31,8 @@ public class TaskHandler extends BaseHttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         String method = exchange.getRequestMethod();
         String path = String.valueOf(exchange.getRequestURI());
-
         System.out.println("Обрабатывается запрос " + path + " с методом " + method);
+
         switch (method) {
             case "GET":
                 executeGETRequest(exchange);
@@ -45,12 +44,13 @@ public class TaskHandler extends BaseHttpHandler {
                 executeDELETERequest(exchange);
                 break;
             default:
-                sendText(exchange, "Такой операции не существует", 404);
+                sendText(exchange, "Такой операции не существует", 405);
         }
     }
 
     private void executeGETRequest(HttpExchange exchange) throws IOException {
-        if (exchange.getRequestURI().getQuery() == null) {
+        String query = exchange.getRequestURI().getQuery();
+        if (query == null) {
             response = gson.toJson(taskManager.getTasks());
             sendText(exchange, response, 200);
             return;
@@ -74,12 +74,12 @@ public class TaskHandler extends BaseHttpHandler {
             InputStream json = exchange.getRequestBody();
             String jsonTask = new String(json.readAllBytes(), DEFAULT_CHARSET);
             Task task = gson.fromJson(jsonTask, Task.class);
+            String query = exchange.getRequestURI().getQuery();
             if (task == null) {
                 sendText(exchange, "Задача не должна быть пустой!", 400);
                 return;
             }
-            Task taskById = taskManager.getTaskById(task.getId());
-            if (taskById == null) {
+            if (query == null) {
                 taskManager.addTask(task);
                 sendText(exchange, "Задача добавлена!", 200);
                 return;
@@ -102,12 +102,8 @@ public class TaskHandler extends BaseHttpHandler {
             sendText(exchange, "Все задачи удалены!", 200);
             return;
         }
-        if (getTaskId(exchange).isEmpty()) {
-            sendText(exchange, "Не указан id задачи ", 404);
-            return;
-        }
         int id = getTaskId(exchange).get();
-            taskManager.deleteTask(id);
-            sendText(exchange, "Задача удалена!", 200);
+        taskManager.deleteTask(id);
+        sendText(exchange, "Задача удалена!", 200);
     }
 }

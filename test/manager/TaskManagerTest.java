@@ -12,7 +12,6 @@ import tracker.tasks.Task;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -32,12 +31,11 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     Task task2 = new Task(TASK_NAME_TEXT, Status.IN_PROGRESS, TASK_DESCRIPTION_TEXT, task1.getEndTime().plusHours(2), 15L);
 
     Epic epic1 = new Epic(EPIC_NAME_TEXT, Status.NEW, EPIC_DESCRIPTION_TEXT, task2.getEndTime().plusHours(1), 15L);
-    Epic epic2 = new Epic(EPIC_NAME_TEXT, Status.DONE, EPIC_DESCRIPTION_TEXT, task2.getEndTime().plusHours(1), 15L);
+    Epic epic2 = new Epic(EPIC_NAME_TEXT, Status.DONE, EPIC_DESCRIPTION_TEXT, epic1.getEndTime().plusHours(1), 15L);
 
-    SubTask subTask1 = new SubTask(SUBTASK_NAME_TEXT, Status.NEW, SUBTASK_DESCRIPTION_TEXT, task2.getEndTime().plusHours(1), 15L, epic1.getId());
+    SubTask subTask1 = new SubTask(SUBTASK_NAME_TEXT, Status.NEW, SUBTASK_DESCRIPTION_TEXT, epic2.getEndTime().plusHours(1), 15L, epic1.getId());
     SubTask subTask2 = new SubTask(SUBTASK_NAME_TEXT, Status.IN_PROGRESS, SUBTASK_DESCRIPTION_TEXT, subTask1.getEndTime().plusHours(1), 15L, epic1.getId());
     SubTask subTask3 = new SubTask(SUBTASK_NAME_TEXT, Status.DONE, SUBTASK_DESCRIPTION_TEXT, subTask2.getEndTime().plusHours(1), 15L, epic1.getId());
-
 
     @BeforeEach
     public void setUp() throws IOException {
@@ -48,7 +46,6 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     void afterEach() {
         taskManager.deleteAllTasks();
         taskManager.deleteAllEpics();
-
     }
 
     //Test add
@@ -59,7 +56,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    void addEpicTest() {
+    void addEpicTest() throws InterruptedException {
         taskManager.addEpic(epic1);
         assertEquals(1, taskManager.getEpics().size());
     }
@@ -86,7 +83,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    void addNewEpicTest() {
+    void addNewEpicTest() throws InterruptedException {
         taskManager.addEpic(epic1);
         final Epic savedEpic = taskManager.getEpicById(1);
 
@@ -101,7 +98,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    void addNewSubtaskTest() {
+    void addNewSubtaskTest() throws InterruptedException {
         taskManager.addEpic(epic1);
         // SubTask subtask = new SubTask(SUBTASK_NAME_TEXT, SUBTASK_DESCRIPTION_TEXT, Status.NEW, 1);
         taskManager.addSubtask(subTask1);
@@ -126,7 +123,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    void getEpicTest() {
+    void getEpicTest() throws InterruptedException {
         taskManager.addEpic(epic1);
         assertEquals(1, taskManager.getEpicById(1).getId());
     }
@@ -154,21 +151,21 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    void deleteEpicByIdTest() {
+    void deleteEpicByIdTest() throws InterruptedException {
         taskManager.addEpic(epic1);
         taskManager.deleteEpic(epic1.getId());
         assertEquals(0, taskManager.getEpics().size());
     }
 
     @Test
-    void deleteEpicAllTest() {
+    void deleteEpicAllTest() throws InterruptedException {
         taskManager.addEpic(epic1);
         taskManager.deleteAllEpics();
         assertEquals(0, taskManager.getEpics().size());
     }
 
     @Test
-    void deleteSubTaskByIdTest() {
+    void deleteSubTaskByIdTest() throws InterruptedException {
         Epic epic = new Epic(1, EPIC_NAME_TEXT, Status.NEW, EPIC_DESCRIPTION_TEXT, LocalDateTime.now().plusHours(1), 15L);
         taskManager.addEpic(epic);
         SubTask subTask = new SubTask(2, SUBTASK_NAME_TEXT, Status.NEW, SUBTASK_DESCRIPTION_TEXT, epic1.getEndTime().plusHours(1), 15L, epic.getId());
@@ -180,7 +177,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    void deleteAllSubTasksTest() {
+    void deleteAllSubTasksTest() throws InterruptedException {
         taskManager.addEpic(epic1);
         taskManager.addSubtask(subTask1);
         taskManager.addSubtask(subTask2);
@@ -202,7 +199,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    void updateEpicTest() {
+    void updateEpicTest() throws InterruptedException {
         taskManager.addEpic(epic1);
         Epic updatedEpic = taskManager.getEpicById(1);
         updatedEpic.setDescription("Test: changed description");
@@ -250,7 +247,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    void checkingSubtaskIfIdAreEqual() {
+    void checkingSubtaskIfIdAreEqual() throws InterruptedException {
         taskManager.addEpic(epic1);
         epic1.setId(1);
         taskManager.addSubtask(subTask1);
@@ -264,7 +261,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    void canNotAddEpicToHimselfTest() {
+    void canNotAddEpicToHimselfTest() throws InterruptedException {
         taskManager.addEpic(epic1);
         epic1.addSubTaskId(1);
         assertTrue(epic1.subtaskIds.isEmpty(), "Эпик добавился сам в свои подзадачи");
@@ -291,7 +288,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    void addEpicWithTreeSubtaskTest() {
+    void addEpicWithTreeSubtaskTest() throws InterruptedException {
         taskManager.addEpic(epic1);
         taskManager.addSubtask(subTask1);
         taskManager.addSubtask(subTask2);
@@ -300,7 +297,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    void addEpicIsEmpty() {
+    void addEpicIsEmpty() throws InterruptedException {
         taskManager.addEpic(epic2);
         assertEquals(0, taskManager.getSubtasks().size(), "Эпик не пустой!");
     }
@@ -317,14 +314,14 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void epicStatusTest() {
+    public void epicStatusTest() throws InterruptedException {
         taskManager.addEpic(epic1);
         epic1.setStatus(Status.IN_PROGRESS);
         assertEquals(Status.IN_PROGRESS, taskManager.getEpicById(epic1.getId()).getStatus());
     }
 
     @Test
-    public void epicStatusSubtaskStatusNEW_Test() {
+    public void epicStatusSubtaskStatusNEW_Test() throws InterruptedException {
 
         SubTask subTask1 = new SubTask(SUBTASK_NAME_TEXT, Status.NEW, SUBTASK_DESCRIPTION_TEXT, task2.getEndTime().plusHours(1), 15L, 1);
         SubTask subTask2 = new SubTask(SUBTASK_NAME_TEXT, Status.NEW, SUBTASK_DESCRIPTION_TEXT, subTask1.getEndTime().plusHours(1), 15L, 1);
@@ -342,7 +339,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void epicStatusSubtaskStatusDONE_Test() {
+    public void epicStatusSubtaskStatusDONE_Test() throws InterruptedException {
 
         SubTask subTask1 = new SubTask(SUBTASK_NAME_TEXT, Status.NEW, SUBTASK_DESCRIPTION_TEXT, task2.getEndTime().plusHours(1), 15L, 1);
         SubTask subTask2 = new SubTask(SUBTASK_NAME_TEXT, Status.NEW, SUBTASK_DESCRIPTION_TEXT, subTask1.getEndTime().plusHours(1), 15L, 1);
@@ -371,7 +368,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void epicStatusSubtaskStatusNEWandDONE_Test() {
+    public void epicStatusSubtaskStatusNEWandDONE_Test() throws InterruptedException {
 
         SubTask subTask1 = new SubTask(SUBTASK_NAME_TEXT, Status.NEW, SUBTASK_DESCRIPTION_TEXT, task2.getEndTime().plusHours(1), 15L, 1);
         SubTask subTask2 = new SubTask(SUBTASK_NAME_TEXT, Status.NEW, SUBTASK_DESCRIPTION_TEXT, subTask1.getEndTime().plusHours(1), 15L, 1);
@@ -394,7 +391,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void epicStatusSubtaskStatusIN_PROGRESSTest() {
+    public void epicStatusSubtaskStatusIN_PROGRESSTest() throws InterruptedException {
 
         SubTask subTask1 = new SubTask(SUBTASK_NAME_TEXT, Status.NEW, SUBTASK_DESCRIPTION_TEXT, task2.getEndTime().plusHours(1), 15L, 1);
         SubTask subTask2 = new SubTask(SUBTASK_NAME_TEXT, Status.NEW, SUBTASK_DESCRIPTION_TEXT, subTask1.getEndTime().plusHours(1), 15L, 1);

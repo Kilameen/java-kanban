@@ -29,6 +29,9 @@ public class SubtaskHandler extends BaseHttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         String method = exchange.getRequestMethod();
+        String path = String.valueOf(exchange.getRequestURI());
+        System.out.println("Обрабатывается запрос " + path + " с методом " + method);
+
         switch (method) {
             case "GET":
                 executeGETRequest(exchange);
@@ -40,12 +43,13 @@ public class SubtaskHandler extends BaseHttpHandler {
                 executeDELETERequest(exchange);
                 break;
             default:
-                sendText(exchange, "Такой операции не существует", 404);
+                sendText(exchange, "Такой операции не существует", 405);
         }
     }
 
     private void executeGETRequest(HttpExchange exchange) throws IOException {
-        if (exchange.getRequestURI().getQuery() == null) {
+        String query = exchange.getRequestURI().getQuery();
+        if (query == null) {
             response = gson.toJson(taskManager.getSubtasks());
             sendText(exchange, response, 200);
             return;
@@ -57,7 +61,7 @@ public class SubtaskHandler extends BaseHttpHandler {
         int id = getTaskId(exchange).get();
         SubTask subtaskById = (SubTask) taskManager.getSubtaskById(id);
         if (isNull(subtaskById)) {
-            sendText(exchange, "Подзадач с id " + id + " не найдено!", 404);
+            sendText(exchange, "Задач с id " + id + " не найдено!", 404);
             return;
         }
         response = gson.toJson(subtaskById);
@@ -67,45 +71,36 @@ public class SubtaskHandler extends BaseHttpHandler {
     private void executePOSTRequest(HttpExchange exchange) throws IOException {
         try {
             InputStream json = exchange.getRequestBody();
-            String jsonSubTask = new String(json.readAllBytes(), DEFAULT_CHARSET);
-            SubTask subTask = gson.fromJson(jsonSubTask, SubTask.class);
-
+            String jsonTask = new String(json.readAllBytes(), DEFAULT_CHARSET);
+            SubTask subTask = gson.fromJson(jsonTask, SubTask.class);
+            String query = exchange.getRequestURI().getQuery();
             if (subTask == null) {
-                sendText(exchange, "Подзадача не должна быть пустой!", 400);
+                sendText(exchange, "Задача не должна быть пустой!", 400);
                 return;
             }
-            SubTask subtaskById = (SubTask) taskManager.getSubtaskById(subTask.getId());
-            if (subtaskById == null) {
+            if (query == null) {
                 taskManager.addSubtask(subTask);
-                sendText(exchange, "Подзадача добавлена!", 200);
+                sendText(exchange, "Задача добавлена!", 200);
                 return;
             }
             taskManager.updateSubtask(subTask);
-            sendText(exchange, "Подзадача обновлена!", 201);
+            sendText(exchange, "Задача обновлена", 201);
 
         } catch (JsonSyntaxException e) {
             sendText(exchange, "Получен некорректный JSON", 400);
         } catch (RuntimeException exp) {
-            sendText(exchange, "Обнаружено пересечение по времени ", 406);
+            sendText(exchange, "Обнаружено пересечение по времени!", 406);
         }
     }
 
     private void executeDELETERequest(HttpExchange exchange) throws IOException {
         String query = exchange.getRequestURI().getQuery();
         if (query == null) {
-            taskManager.deleteAllSubtasks(); // Метод для удаления всех задач
+            taskManager.deleteAllSubtasks();
             sendText(exchange, "Все подзадачи удалены!", 200);
             return;
         }
-        if (getTaskId(exchange).isEmpty()) {
-            sendText(exchange, "Некорректный id подзадачи!", 404);
-            return;
-        }
         int id = getTaskId(exchange).get();
-        if (taskManager.getSubtaskById(id) == null) {
-            sendText(exchange, "Подзадачи с id " + id + " не найдено!", 404);
-            return;
-        }
         taskManager.deleteSubtask(id);
         sendText(exchange, "Подзадача удалена!", 200);
     }

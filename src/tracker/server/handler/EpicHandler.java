@@ -10,8 +10,10 @@ import java.io.InputStream;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
+import tracker.tasks.SubTask;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 import static java.util.Objects.isNull;
 
 public class EpicHandler extends BaseHttpHandler {
@@ -30,6 +32,9 @@ public class EpicHandler extends BaseHttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         String method = exchange.getRequestMethod();
+        String path = String.valueOf(exchange.getRequestURI());
+        System.out.println("Обрабатывается запрос " + path + " с методом " + method);
+
         switch (method) {
             case "GET":
                 executeGETRequest(exchange);
@@ -46,8 +51,16 @@ public class EpicHandler extends BaseHttpHandler {
     }
 
     private void executeGETRequest(HttpExchange exchange) throws IOException {
-        if (exchange.getRequestURI().getQuery() == null) {
+        String query = exchange.getRequestURI().getQuery();
+        if (query == null) {
             response = gson.toJson(taskManager.getEpics());
+            sendText(exchange, response, 200);
+            return;
+        }
+        if (exchange.getRequestURI().toString().contains("subtasks")) {
+            Integer id = getTaskId(exchange).get();
+            List<SubTask> result = taskManager.getSubtasksByEpicId(id);
+            response = gson.toJson(result);
             sendText(exchange, response, 200);
             return;
         }
@@ -68,14 +81,14 @@ public class EpicHandler extends BaseHttpHandler {
     private void executePOSTRequest(HttpExchange exchange) throws IOException {
         try {
             InputStream json = exchange.getRequestBody();
-            String jsonEpic = new String(json.readAllBytes(), DEFAULT_CHARSET);
-            Epic epic = gson.fromJson(jsonEpic, Epic.class);
+            String jsonTask = new String(json.readAllBytes(), DEFAULT_CHARSET);
+            Epic epic = gson.fromJson(jsonTask, Epic.class);
+            String query = exchange.getRequestURI().getQuery();
             if (epic == null) {
                 sendText(exchange, "Задача не должна быть пустой!", 400);
                 return;
             }
-            Epic epicById = taskManager.getEpicById(epic.getId());
-            if (epicById == null) {
+            if (query == null) {
                 taskManager.addEpic(epic);
                 sendText(exchange, "Задача добавлена!", 200);
                 return;
@@ -94,19 +107,10 @@ public class EpicHandler extends BaseHttpHandler {
         String query = exchange.getRequestURI().getQuery();
         if (query == null) {
             taskManager.deleteAllEpics();
-            taskManager.deleteAllSubtasks();// Метод для удаления всех задач
             sendText(exchange, "Все эпики и подзадачи удалены!", 200);
             return;
         }
-        if (getTaskId(exchange).isEmpty()) {
-            sendText(exchange, "Не указан id эпика!", 404);
-            return;
-        }
-        int id = getTaskId(exchange).get();
-        if (taskManager.getEpicById(id) == null) {
-            sendText(exchange, "Эпиков с id " + id + " не найдено!", 404);
-            return;
-        }
+        Integer id = getTaskId(exchange).get();
         taskManager.deleteEpic(id);
         sendText(exchange, "Эпик удален!", 200);
     }
