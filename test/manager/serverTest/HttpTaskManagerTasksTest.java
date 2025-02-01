@@ -47,9 +47,9 @@ public class HttpTaskManagerTasksTest {
                 .registerTypeAdapter(Duration.class, new DurationAdapter())
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
                 .create();
-        task = new Task(1, "Task_1", Status.NEW, "Task_desc_1", LocalDateTime.now(), 15L);
-        epic = new Epic(2, "Epic_1", Status.NEW, "Epic_desc_1", task.getEndTime().plusHours(1), 15L);
-        subtask = new SubTask(3, "Subtask_1_1", Status.NEW, "Subtask_desc_1_1", epic.getEndTime().plusHours(1), 15L, epic.getId());
+        task = new Task("Task_1", Status.NEW, "Task_desc_1", LocalDateTime.of(2025, 1, 25, 9, 11), 15L);
+        epic = new Epic("Epic_1", "Epic_desc_1");
+        subtask = new SubTask("Subtask_1_1", Status.NEW, "Subtask_desc_1_1", LocalDateTime.of(2025, 1, 25, 13, 11), 15L, epic.getId());
 
         client = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
@@ -96,7 +96,6 @@ public class HttpTaskManagerTasksTest {
 
     @Test
     public void addEpicToServer() throws IOException, InterruptedException {
-        taskManager.addEpic(epic);
         postTask(URI.create(EPIC_URL), epic, client);
         URI url = URI.create(EPIC_URL);
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
@@ -109,7 +108,6 @@ public class HttpTaskManagerTasksTest {
 
     @Test
     public void addSubtaskToServer() throws IOException, InterruptedException {
-        taskManager.addSubtask(subtask);
         postTask(URI.create(SUBTASK_URL), subtask, client);
         URI url = URI.create(SUBTASK_URL);
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
@@ -140,7 +138,6 @@ public class HttpTaskManagerTasksTest {
     @Test
     void getAllEpicAndEpicsById() throws IOException, InterruptedException {
         taskManager.addEpic(epic);
-        postTask(URI.create(EPIC_URL), epic, client);
         URI url = URI.create(EPIC_URL + "/?id=" + epic.getId());
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -155,7 +152,6 @@ public class HttpTaskManagerTasksTest {
     @Test
     void getAllSubtaskAndSubtasksById() throws IOException, InterruptedException {
         taskManager.addSubtask(subtask);
-        postTask(URI.create(SUBTASK_URL), subtask, client);
         URI url = URI.create(SUBTASK_URL + "/?id=" + subtask.getId());
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -417,7 +413,7 @@ public class HttpTaskManagerTasksTest {
     @Test
     void testGetPrioritizedTasksWithTwoTask() throws Exception {
         taskManager.addTask(task);
-        Task task2 = new Task(2, "Имя задачи", Status.NEW, "Описание задачи", LocalDateTime.of(2025, 1, 25, 12, 0), 15L);
+        Task task2 = new Task("Имя задачи", Status.NEW, "Описание задачи", LocalDateTime.of(2024, 1, 25, 12, 0), 15L);
         taskManager.addTask(task2);
 
         URI url = URI.create(PRIORITIZED_URL);

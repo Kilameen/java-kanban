@@ -98,9 +98,6 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void addEpic(Epic epic) {
-        if (isOverlappingEpic(epic)) {
-            throw new TaskOverlapException("Время задач пересекается");
-        }
         epic.setId(nextId++);
         epics.put(epic.getId(), epic);
     }
@@ -131,15 +128,14 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateTask(Task task) {
         int taskID = task.getId();
         if (tasks.containsKey(taskID)) {
-            tasks.put(taskID, task);
-
             prioritizedTasks.removeIf(t -> t.getId() == taskID);
-        }
-        if (isOverlapping(task)) {
-            throw new TaskOverlapException("Время задач пересекается");
-        }
-        if (task.getStartTime() != null) {
-            prioritizedTasks.add(task);
+            if (isOverlapping(task)) {
+                throw new TaskOverlapException("Время задач пересекается");
+            }
+            tasks.put(taskID, task);
+            if (task.getStartTime() != null) {
+                prioritizedTasks.add(task);
+            }
         }
     }
 
@@ -150,25 +146,23 @@ public class InMemoryTaskManager implements TaskManager {
             epics.put(epicID, epic);
             updateEpicStatus(epicID);
         }
-        if (isOverlapping(epic)) {
-            throw new TaskOverlapException("Время задач пересекается");
-        }
     }
 
     @Override
     public void updateSubtask(SubTask subtask) {
         int subTaskId = subtask.getId();
         int epicID = subtask.getEpicID();
+
         if (subtasks.containsKey(subTaskId)) {
+            prioritizedTasks.removeIf(s -> s.getId() == subTaskId);
+            if (isOverlapping(subtask)) {
+                throw new TaskOverlapException("Время задач пересекается");
+            }
             subtasks.put(subTaskId, subtask);
+            if (subtask.getStartTime() != null) {
+                prioritizedTasks.add(subtask);
+            }
             updateEpicStatus(epicID);
-        }
-        prioritizedTasks.removeIf(s -> s.getId() == subTaskId);
-        if (isOverlapping(subtask)) {
-            throw new TaskOverlapException("Время задач пересекается");
-        }
-        if (subtask.getStartTime() != null) {
-            prioritizedTasks.add(subtask);
         }
     }
 
@@ -210,6 +204,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         for (Integer id : subtasks.keySet()) {
             historyManager.remove(id);
+            prioritizedTasks.remove(subtasks.get(id));
         }
         epics.clear();
         subtasks.clear();
@@ -272,35 +267,5 @@ public class InMemoryTaskManager implements TaskManager {
         return prioritizedTasks.stream()
                 .anyMatch(task -> task.getEndTime().isAfter(validTask.getStartTime()) &&
                         task.getStartTime().isBefore(validTask.getEndTime()));
-    }
-
-    private boolean isOverlappingEpic(Epic epic) {
-        for (Epic existingEpic : epics.values()) {
-            if (existingEpic.getStartTime() != null &&
-                    epic.getStartTime() != null &&
-                    existingEpic.getEndTime().isAfter(epic.getStartTime()) &&
-                    existingEpic.getStartTime().isBefore(epic.getEndTime())) {
-                return true;
-            }
-        }
-
-        for (Task task : tasks.values()) {
-            if (task.getStartTime() != null &&
-                    epic.getStartTime() != null &&
-                    task.getEndTime().isAfter(epic.getStartTime()) &&
-                    task.getStartTime().isBefore(epic.getEndTime())) {
-                return true;
-            }
-        }
-
-        for (SubTask subtask : subtasks.values()) {
-            if (subtask.getStartTime() != null &&
-                    epic.getStartTime() != null &&
-                    subtask.getEndTime().isAfter(epic.getStartTime()) &&
-                    subtask.getStartTime().isBefore(epic.getEndTime())) {
-                return true;
-            }
-        }
-        return false;
     }
 }

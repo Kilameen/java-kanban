@@ -51,6 +51,11 @@ public class Task {
         this.duration = Duration.ofMinutes(durationMinutes);
     }
 
+    public Task(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
     public LocalDateTime getStartTime() {
         return startTime;
     }
