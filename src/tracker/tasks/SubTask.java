@@ -3,7 +3,7 @@ package tracker.tasks;
 import java.time.LocalDateTime;
 
 public class SubTask extends Task {
-    private final int epicID;
+    private int epicID;
 
     public SubTask(String name, String description, Status status, int epicID) {
         super(name, description, status);
@@ -15,6 +15,11 @@ public class SubTask extends Task {
         this.epicID = epicID;
     }
 
+    public SubTask(int id, String name, Status status, String description, LocalDateTime startTime, Long durationMinutes, int epicID) {
+        super(id, name, status, description, startTime, durationMinutes);
+        this.epicID = epicID;
+    }
+
     public Type getType() {
         return Type.SUBTASK;
     }
@@ -23,8 +28,13 @@ public class SubTask extends Task {
         return epicID;
     }
 
+    public int setEpicID(Integer id) {
+        this.epicID = epicID;
+        return epicID;
+    }
+
     @Override
-    public void setId(int id) {
+    public void setId(Integer id) {
         if (epicID == id) {
             throw new IllegalArgumentException("Subtask id не может быть равен epicID.");
         }

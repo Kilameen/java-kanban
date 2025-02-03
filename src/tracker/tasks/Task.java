@@ -6,12 +6,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Task {
-    protected String name;
-    protected String description;
     protected int id;
+    protected String name;
     protected Status status;
-    protected Duration duration;// продолжительность задачи в минутах
-    protected LocalDateTime startTime; // дата и время старта выполнения задачи
+    protected String description;
+    protected LocalDateTime startTime;
+    protected Duration duration;// продолжительность задачи в минутах// дата и время старта выполнения задачи
     public static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public Task(String name, String description, Status status, int id) {
@@ -27,6 +27,14 @@ public class Task {
         this.status = status;
     }
 
+    public Task(String name, Status status, String description, LocalDateTime startTime, Long durationMinutes) {
+        this.name = name;
+        this.status = status;
+        this.description = description;
+        this.startTime = startTime;
+        this.duration = Duration.ofMinutes(durationMinutes);
+    }
+
     public Task(int id, String name, String description, Status status) {
         this.id = id;
         this.name = name;
@@ -34,12 +42,18 @@ public class Task {
         this.status = status;
     }
 
-    public Task(String name, Status status, String description, LocalDateTime startTime, Long durationMinutes) {
+    public Task(int id, String name, Status status, String description, LocalDateTime startTime, Long durationMinutes) {
+        this.id = id;
         this.name = name;
         this.status = status;
         this.description = description;
         this.startTime = startTime;
         this.duration = Duration.ofMinutes(durationMinutes);
+    }
+
+    public Task(String name, String description) {
+        this.name = name;
+        this.description = description;
     }
 
     public LocalDateTime getStartTime() {
@@ -87,11 +101,11 @@ public class Task {
         this.description = description;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
